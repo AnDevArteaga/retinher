@@ -1,0 +1,260 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter Tight", system-ui, sans-serif;
+  /* General: blanco */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8f8f8;
+  --color-bg-test: #f0f0f0;
+  /* Texto */
+  --color-text: #1a1a1a;
+  --color-text-muted: #6b7280;
+  /* Títulos */
+  --color-title: #3d3f89;
+  --color-title-alt: #ff6600;
+  --color-title-dark: #161731;
+  /* Botones */
+  --color-btn: #ff6600;
+  --color-btn-hover: #e65c00;
+  --color-btn-text: #ffffff;
+  --ease-power4: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --tracking-tight: -0.04em;
+  --tracking-tighter: -0.06em;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg-primary);
+  color: var(--color-text);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Utilidades de marca */
+.text-title { color: var(--color-title); }
+.text-title-alt { color: var(--color-title-alt); }
+.text-muted { color: var(--color-text-muted); }
+.bg-brand { background-color: var(--color-btn); }
+.bg-brand:hover { background-color: var(--color-btn-hover); }
+.border-brand { border-color: var(--color-title); }
+.border-btn { border-color: var(--color-btn); }
+
+@media (pointer: coarse) {
+  body {
+    cursor: auto;
+  }
+}
+
+/* Grain overlay - cinematic noise */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* Ruido para secciones (ej. Servicios) - mismo grain, opacidad controlada en el componente */
+.section-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* Section base - full viewport */
+.section {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+
+/* Hero typography - massive titles */
+.hero-title {
+  font-weight: 700;
+  letter-spacing: var(--tracking-tighter);
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+/* Magnetic button area */
+.magnetic-wrap {
+  display: inline-block;
+  position: relative;
+}
+
+/* Custom cursor hidden on touch */
+@media (pointer: coarse) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
+  }
+}
+
+/* Vision Lab section - distinct background when active */
+.section-vision {
+  background: var(--color-bg-test);
+}
+
+/* Smooth transition for body background (controlled by JS/GSAP) */
+body {
+  transition: background-color 0.8s var(--ease-power4);
+}
+body.body-vision-active {
+  background: var(--color-bg-test);
+}
+
+/* Botón primario de marca */
+.btn-primary {
+  background-color: var(--color-btn);
+  color: var(--color-btn-text);
+}
+.btn-primary:hover {
+  background-color: var(--color-btn-hover);
+}
+
+/* Glasses frame - GTA 6 style */
+.glasses-frame {
+  min-height: 420px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.glasses-lens {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 2px solid rgba(61, 63, 137, 0.4);
+  box-shadow:
+    inset 0 0 60px rgba(61, 63, 137, 0.08),
+    0 0 0 1px rgba(61, 63, 137, 0.1);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.glasses-lens.left-lens {
+  left: 50%;
+  transform: translate(calc(-100% - 40px), -50%);
+}
+
+.glasses-lens.right-lens {
+  left: 50%;
+  transform: translate(40px, -50%);
+}
+
+.glasses-bridge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 80px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(61, 63, 137, 0.35);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  background: linear-gradient(180deg, transparent 0%, rgba(61, 63, 137, 0.06) 100%);
+}
+
+@media (min-width: 768px) {
+  .glasses-lens {
+    width: 320px;
+    height: 320px;
+  }
+  .glasses-lens.left-lens {
+    transform: translate(calc(-100% - 50px), -50%);
+  }
+  .glasses-lens.right-lens {
+    transform: translate(50px, -50%);
+  }
+  .glasses-bridge {
+    width: 100px;
+    height: 28px;
+  }
+}
+
+/* ========== Solo ruta Nosotros: estilos y animaciones CSS (sin GSAP) ========== */
+.nosotros-page {
+  --nosotros-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes nosotros-hero-title {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nosotros-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nosotros-page .nosotros-hero-title {
+  animation: nosotros-hero-title 0.6s var(--nosotros-ease) forwards;
+}
+
+.nosotros-page .nosotros-intro {
+  animation: nosotros-fade-in 0.5s var(--nosotros-ease) 0.15s forwards;
+  opacity: 0;
+}
+
+.nosotros-page .nosotros-heading {
+  animation: nosotros-fade-in 0.5s var(--nosotros-ease) 0.25s forwards;
+  opacity: 0;
+}
+
+.nosotros-page .nosotros-accordion {
+  animation: nosotros-fade-in 0.5s var(--nosotros-ease) 0.35s forwards;
+  opacity: 0;
+}
+
+.nosotros-page .nosotros-accordion-item {
+  border-left: 3px solid transparent;
+  transition: border-color 0.25s var(--nosotros-ease), box-shadow 0.25s var(--nosotros-ease);
+}
+
+.nosotros-page .nosotros-accordion-item.is-open {
+  border-left-color: var(--color-title);
+  box-shadow: 0 4px 12px rgba(61, 63, 137, 0.08);
+}
+
+.nosotros-page .nosotros-accordion-item:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.nosotros-page .nosotros-accordion-item .nosotros-accordion-btn {
+  transition: background-color 0.2s var(--nosotros-ease), color 0.2s var(--nosotros-ease);
+}
+
+.nosotros-page .nosotros-accordion-item.is-open .nosotros-accordion-btn {
+  color: var(--color-title);
+  background-color: rgba(61, 63, 137, 0.04);
+}
+
+.nosotros-page .nosotros-panel-inner {
+  transition: opacity 0.2s var(--nosotros-ease);
+}
