@@ -9,6 +9,7 @@ export function NavBar() {
   const links = [
     { to: '/', label: 'Inicio' },
     { to: '/nosotros', label: 'Nosotros' },
+    { to: '/ucad-te-veo-te-ves', label: 'UCAD Te Veo y Te Ves' },
     { to: '/sedes', label: 'Sedes' },
     { to: '/contacto', label: 'Contacto' },
   ]
