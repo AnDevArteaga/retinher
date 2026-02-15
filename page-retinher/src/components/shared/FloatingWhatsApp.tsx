@@ -1,4 +1,4 @@
-import { mockData } from '../data/MockData'
+import { mockData } from '../../data/MockData'
 
 const { numero, mensaje } = mockData.whatsapp
 const waUrl = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`

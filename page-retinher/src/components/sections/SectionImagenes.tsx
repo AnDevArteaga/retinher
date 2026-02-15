@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { mockData } from "../data/MockData";
+import { mockData } from "../../data/MockData";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -54,18 +54,18 @@ export function SectionImagenes() {
 
   return (
     <section ref={sectionRef} className="section bg-[var(--color-bg-primary)]" id="imagenes">
-      <div className="mx-auto w-full max-w-6xl px-6 py-24 md:px-12">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-12 py-16 sm:py-20 md:py-24">
         <h2
           ref={titleRef}
-          className="mb-4 text-4xl font-bold tracking-tighter md:text-5xl"
+          className="mb-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter"
           style={{ color: "var(--color-title-alt)" }}
         >
           {title}
         </h2>
-        <p className="mb-16 text-lg text-[var(--color-text-muted)]">{subtitle}</p>
+        <p className="mb-10 sm:mb-12 md:mb-16 text-sm sm:text-base md:text-lg text-[var(--color-text-muted)]">{subtitle}</p>
         <div
           ref={gridRef}
-          className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6"
+          className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6"
         >
           {images.map((img) => (
             <div

@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Hero } from '../components/Hero'
-import { SectionReconocimientos } from '../components/SectionReconocimientos'
-import { SectionAbout } from '../components/SectionAbout'
-import { SectionServicios } from '../components/SectionServicios'
-import { SectionQueRevisamos } from '../components/SectionQueRevisamos'
-import { GalleryHorizontal } from '../components/GalleryHorizontal'
-import { SectionImagenes } from '../components/SectionImagenes'
-import { VisionTest } from '../components/VisionTest'
+import { Hero } from '../components/sections/Hero'
+import { SectionReconocimientos } from '../components/sections/SectionReconocimientos'
+import { SectionUCAD } from '../components/sections/SectionUCAD'
+import { SectionAbout } from '../components/sections/SectionAbout'
+import { SectionServicios } from '../components/sections/SectionServicios'
+import { SectionQueRevisamos } from '../components/sections/SectionQueRevisamos'
+import { GalleryHorizontal } from '../components/sections/GalleryHorizontal'
+import { SectionImagenes } from '../components/sections/SectionImagenes'
+import { VisionTest } from '../components/shared/VisionTest'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -38,6 +39,7 @@ export function HomePage() {
     <div ref={wrapperRef} className="relative">
       <Hero />
       <SectionReconocimientos />
+      <SectionUCAD />
       <SectionServicios />
       <SectionAbout />
       <SectionQueRevisamos />

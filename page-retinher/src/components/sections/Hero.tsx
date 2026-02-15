@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
-import { RevealText } from './RevealText'
-import { mockData } from '../data/MockData'
-import { Button } from './ui/button'
-import video from '../assets/hero.mp4'
+import { RevealText } from '../shared/RevealText'
+import { mockData } from '../../data/MockData'
+import { Button } from '../ui/button'
+import video from '../../assets/hero.mp4'
 
 export function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -18,11 +18,15 @@ export function Hero() {
 
       // Seteo inicial
       const words = titleRef.current?.querySelectorAll('.reveal-unit')
-      gsap.set(words, { opacity: 0, y: 80, filter: 'blur(15px)' })
-      gsap.set(infoRef.current, { opacity: 0, x: -20 })
-      gsap.set(overlayRef.current, { opacity: 0 })
+      const info = infoRef.current
+      const overlay = overlayRef.current
+      if (!words?.length || !info || !overlay) return
 
-      tl.to(overlayRef.current, { opacity: 1, duration: 2 })
+      gsap.set(words, { opacity: 0, y: 80, filter: 'blur(15px)' })
+      gsap.set(info, { opacity: 0, x: -20 })
+      gsap.set(overlay, { opacity: 0 })
+
+      tl.to(overlay, { opacity: 1, duration: 2 })
         .to(
           words,
           {
@@ -35,7 +39,7 @@ export function Hero() {
           '-=1.5',
         )
         .to(
-          infoRef.current,
+          info,
           {
             opacity: 1,
             x: 0,
@@ -53,6 +57,7 @@ export function Hero() {
       ref={sectionRef}
       className="relative h-screen w-full overflow-hidden bg-black"
       id="hero"
+      data-cursor-light
     >
       {/* Video de Fondo con Overlay */}
       <div className="absolute inset-0 z-0">
@@ -72,12 +77,12 @@ export function Hero() {
       </div>
 
       {/* Contenido */}
-      <div className="relative z-10 flex h-full flex-col justify-center items-center px-6 md:px-12 lg:px-24">
-        <div className="max-w-[1400px]">
+      <div className="relative z-10 flex h-full flex-col justify-center items-center px-4 sm:px-6 md:px-12 lg:px-24">
+        <div className="max-w-[1400px] w-full">
           {/* Headline - Corregido alineación y tracking */}
           <h1
             ref={titleRef}
-            className="text-left text-[clamp(3.5rem,10vw,9rem)] font-bold leading-[1] text-white"
+            className="text-left text-[clamp(2.25rem,8vw,9rem)] sm:text-[clamp(2.75rem,9vw,9rem)] font-bold leading-[1.05] text-white"
             style={{
               letterSpacing: '-0.02em', // Espaciado entre letras premium
               wordSpacing: '0.1em', // Espaciado entre palabras
@@ -94,21 +99,21 @@ export function Hero() {
           {/* Línea Combinada: Subline + Brandline */}
           <div
             ref={infoRef}
-            className="mt-10 mb-10 flex flex-wrap items-center gap-x-4 gap-y-2 text-left"
+            className="mt-6 sm:mt-10 mb-6 sm:mb-10 flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-2 text-left"
           >
             <img
               src="public/cropped-Icono.png"
               alt="icon"
-              className="w-16 h-16"
+              className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 shrink-0"
             />
             <p
-              className="text-xl font-light tracking-[0.2em] uppercase md:text-2xl font-semibold "
+              className="text-base sm:text-xl font-light tracking-[0.15em] sm:tracking-[0.2em] uppercase md:text-2xl font-semibold"
               style={{ color: '#3d3f89' }}
             >
               {mockData.hero.subline}
             </p>
-            <span className="hidden h-6 w-[1px] bg-white/30 md:block" />
-            <p className="text-lg font-medium tracking-tight text-white/80 md:text-xl">
+            <span className="hidden h-5 sm:h-6 w-[1px] bg-white/30 md:inline-block" />
+            <p className="text-sm sm:text-lg font-medium tracking-tight text-white/80 md:text-xl">
               {mockData.hero.brandLine}
             </p>
           </div>

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { mockData } from '../data/MockData'
+import { mockData } from '../../data/MockData'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -83,11 +83,11 @@ export function SectionQueRevisamos() {
         }}
       ></div>
 
-      <div className="relative flex h-screen w-full items-center justify-center">
+      <div className="relative flex min-h-screen w-full items-center justify-center px-4 sm:px-6">
         {/* LAS GAFAS - Capa superior */}
         <div
           ref={glassesRef}
-          className="absolute z-20 w-[500px] md:w-[800px] pointer-events-none flex justify-center"
+          className="absolute z-20 w-[min(90vw,500px)] sm:w-[400px] md:w-[600px] lg:w-[800px] pointer-events-none flex justify-center"
         >
           <img
             src="public/gafas.png"
@@ -100,16 +100,16 @@ export function SectionQueRevisamos() {
         {/* EL CONTENIDO - Se ve al inicio por el hueco del lente */}
         <div
           ref={contentRef}
-          className="relative z-10 max-w-3xl px-10 text-left"
+          className="relative z-10 max-w-3xl px-4 sm:px-6 md:px-10 text-center sm:text-left"
         >
           <h2
-            className="mt-8 text-5xl md:text-8xl font-bold tracking-tighter leading-[0.9]"
+            className="mt-4 sm:mt-6 md:mt-8 text-2xl sm:text-3xl md:text-5xl lg:text-7xl xl:text-8xl font-bold tracking-tighter leading-[0.9]"
             style={{ color: 'var(--color-title)', letterSpacing: '-0.01em' }}
           >
             {title}
           </h2>
 
-          <p className="mt-10 text-xl md:text-2xl text-slate-500 font-light leading-relaxed max-w-2xl mx-auto">
+          <p className="mt-6 sm:mt-8 md:mt-10 text-base sm:text-lg md:text-xl lg:text-2xl text-slate-500 font-light leading-relaxed max-w-2xl mx-auto">
             {text}
           </p>
         </div>

@@ -45,7 +45,7 @@ export const mockData = {
       image: "https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=1200&q=80&ar=16:9",    },
   ],
   nosotros: {
-    heroImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1920&q=80",
+    heroImage: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/reti.jpg",
     title: "Nosotros",
     intro:
       "RETINHER S.A.S cuenta con una gama de servicios de oftalmología en el área de la salud, para satisfacer las necesidades de nuestros usuarios y mejorar su calidad de vida. Brindamos servicios en:",
@@ -203,8 +203,8 @@ export const mockData = {
         subtitulo: "Certificación de Responsabilidad Social Empresarial",
         descripcion: "Certificación de RSE con Fenalco Solidario que avala nuestro compromiso con prácticas empresariales responsables, inclusión social y aporte al desarrollo territorial. Este sello reconoce el trabajo en cadena de valor ética y el impacto positivo en la comunidad.",
         logros: "Implementación de programas de bienestar, alianzas con actores sociales y cumplimiento de estándares de transparencia y gestión responsable.",
-        imagen: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1920&q=80",
-        logoPlaceholder: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=400&q=80",
+        imagen: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/LOGO%20CERTIFICADO%20COLOMBIA.png",
+        logoPlaceholder: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/LOGO%20CERTIFICADO%20COLOMBIA.png",
         color: "#1e3a5f",
       },
       {
@@ -214,8 +214,8 @@ export const mockData = {
         subtitulo: "Cámara de Comercio",
         descripcion: "Participación activa en el Cluster de Salud de la Cámara de Comercio, posicionando a RETINHER como actor estratégico en el ecosistema sanitario regional. Trabajamos en red para fortalecer la oferta de salud especializada y mejorar el acceso a la población.",
         logros: "Vinculación con el ecosistema empresarial de salud, intercambio de buenas prácticas y generación de valor compartido en la región.",
-        imagen: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1920&q=80",
-        logoPlaceholder: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=400&q=80",
+        imagen: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/LOGO%20CLUSTER%20EN%20SALUD.png",
+        logoPlaceholder: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/LOGO%20CLUSTER%20EN%20SALUD.png",
         color: "#0f4c75",
       },
       {
@@ -225,20 +225,9 @@ export const mockData = {
         subtitulo: "Sostenibilidad en salud",
         descripcion: "Adhesión a la Red Global de Hospitales Verdes: transición de 0 kg a 1.091 kg de reciclaje (agosto 2025), política Cero Papel, eficiencia energética e inclusión del Cambio Climático en el Plan de Emergencias. Gestión ambiental alineada con los Objetivos de Desarrollo Sostenible.",
         logros: "Reducción de huella documental, circuitos de aprovechamiento de residuos y organización preparada ante eventos climáticos.",
-        imagen: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1920&q=80",
-        logoPlaceholder: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=400&q=80",
+        imagen: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/RED%20DE%20HOSPITALES%20VERDES.png",
+        logoPlaceholder: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/RED%20DE%20HOSPITALES%20VERDES.png",
         color: "#0d5c2e",
-      },
-      {
-        id: "te-veo-te-ves",
-        orden: 4,
-        titulo: "Te Veo y Te Ves",
-        subtitulo: "Prevención de ceguera evitable",
-        descripcion: "Programa de tamizaje y prevención de la Retinopatía Diabética. Previsión de la severidad en pacientes diabéticos para evitar la ceguera mediante detección temprana y seguimiento protocolizado. Tecnología y evidencia al servicio de la salud visual.",
-        logros: "Reducción de la incidencia de ceguera evitable en población diabética y acceso a atención especializada en retina.",
-        imagen: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1920&q=80",
-        logoPlaceholder: "https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=400&q=80",
-        color: "#3d3f89",
       },
       {
         id: "reti-5r",
@@ -247,61 +236,29 @@ export const mockData = {
         subtitulo: "Mascota del voluntariado ambiental",
         descripcion: "Reti 5R y Semillero Verde: modelo de voluntariado que educa a más de 100 niños en las 5R (Reducir, Reutilizar, Reciclar, Recuperar, Repensar). Jornadas de Plogging y el Reinado del Reciclaje integran a familias y comunidad en el territorio.",
         logros: "Más de 100 niños formados en economía circular, jornadas de Plogging y acciones visibles de impacto ambiental en la región.",
-        imagen: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1920&q=80",
-        logoPlaceholder: "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=400&q=80",
+        imagen: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/RETI%205R_page-00012.jpg",
+        logoPlaceholder: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/RETI%205R_page-00012.jpg",
         color: "#0d5c2e",
       },
     ],
   },
   sellosImpacto: {
     titulo: "Sellos de Impacto",
-    subtitulo: "Evidencia real de nuestra excelencia clínica y social.",
+    subtitulo: "Evidencia de nuestra excelencia clínica y social.",
     sellos: [
-      {
-        id: "hvs",
-        titulo: "Hospitales Verdes y Saludables",
-        logo: "/logos/hospitales-verdes.png",
-        descripcion:
-          "Lideramos la resiliencia climática en Córdoba con el programa Retinher Transforma.",
-        stats: [
-          { valor: "1091", unidad: "kg", label: "Reciclaje 2025" },
-          { valor: "100", unidad: "%", label: "Cero Papel" },
-        ],
-        tags: ["Sostenibilidad", "MAITE", "Clima"],
-        color: "#27AE60",
-      },
-      {
-        id: "ucad",
-        titulo: "UCAD \"Te Veo y Ves\"",
-        logo: "/logos/ucad-logo.png",
-        descripcion:
-          "Unidad Clínica de Alto Desempeño para la prevención de ceguera en pacientes diabéticos.",
-        stats: [
-          { valor: "80", unidad: "%", label: "Cobertura Tamizaje" },
-          { valor: "<7", unidad: "días", label: "Remisión Urgente" },
-        ],
-        tags: ["Excelencia EFQM", "REDER", "Retina"],
-        color: "#0056b3",
-      },
-      {
-        id: "reti",
-        titulo: "Reti 5R - Semillero Verde",
-        logo: "/logos/reti-5r.png",
-        descripcion:
-          "Educación ambiental y compromiso social con las familias y niños de nuestra comunidad.",
-        stats: [
-          { valor: "100", unidad: "+", label: "Niños Formados" },
-          { valor: "0", unidad: "costo", label: "Voluntariado" },
-        ],
-        tags: ["Plogging", "Comunidad", "Futuro"],
-        color: "#F39C12",
-      },
       {
         id: "fenalco",
         titulo: "Fenalco Solidario (RSE)",
-        logo: "/logos/fenalco-solidario.png",
+        logo: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/LOGO%20CERTIFICADO%20COLOMBIA.png",
         descripcion:
-          "Certificación en Responsabilidad Social Empresarial y brigadas con Unidad Móvil.",
+          "Certificación en Responsabilidad Social Empresarial y brigadas con Unidad Móvil en zonas rurales.",
+        porQue:
+          "Reconoce a empresas que integran la responsabilidad social como parte de su estrategia de negocio y generan impacto positivo en comunidades vulnerables.",
+        queHicieron: [
+          "Brigadas oftalmológicas con Unidad Móvil en más de 30 municipios de Córdoba.",
+          "Alianza con Fenalco para llevar salud visual a zonas rurales sin acceso.",
+          "85.7% de satisfacción en beneficiarios atendidos.",
+        ],
         stats: [
           { valor: "85.7", unidad: "%", label: "Satisfacción" },
           { valor: "30", unidad: "", label: "Municipios" },
@@ -310,19 +267,76 @@ export const mockData = {
         color: "#2980B9",
       },
       {
-        id: "excelencia",
-        titulo: "Colombia Excelente",
-        logo: "/logos/colombia-excelente.png",
+        id: "hospitales-verdes",
+        titulo: "Hospitales Verdes y Saludables",
+        logo: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/RED%20DE%20HOSPITALES%20VERDES.png",
         descripcion:
-          "Reconocimiento a la Cultura de la Seguridad y excelencia en procesos bajo modelo REDER.",
-        stats: [
-          { valor: "80", unidad: "%", label: "Menos Rotación" },
-          { valor: "100", unidad: "%", label: "SST Cumplido" },
+          "Lideramos la resiliencia climática en Córdoba con el programa Retinher Transforma.",
+        porQue:
+          "Acredita instituciones de salud que implementan prácticas sostenibles y resilientes ante el cambio climático, alineadas con los ODS.",
+        queHicieron: [
+          "1.091 kg de material reciclado en 2025 (de 0 kg antes del programa).",
+          "Política Cero Papel y digitalización de procesos.",
+          "Inclusión del Cambio Climático en el Plan de Emergencias.",
+          "Eficiencia energética y circuitos de aprovechamiento de residuos.",
         ],
-        tags: ["Calidad", "ARL SURA", "Gestión"],
-        color: "#C0392B",
+        stats: [
+          { valor: "1091", unidad: "kg", label: "Reciclaje 2025" },
+          { valor: "100", unidad: "%", label: "Cero Papel" },
+        ],
+        tags: ["Sostenibilidad", "MAITE", "Clima"],
+        color: "#27AE60",
+      },
+      {
+        id: "cluster",
+        titulo: "Cluster de Salud",
+        logo: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/LOGO%20CLUSTER%20EN%20SALUD.png",
+        descripcion:
+          "Participación en el Cluster de Salud de la Cámara de Comercio, posicionando a RETINHER como actor estratégico en el ecosistema sanitario regional.",
+        porQue:
+          "Vincula instituciones del sector salud para fortalecer la oferta regional, compartir buenas prácticas y articular proyectos conjuntos.",
+        queHicieron: [
+          "Participación activa en el Cluster de Salud de la Cámara de Comercio de Montería.",
+          "RETINHER como referente oftalmológico en la red regional.",
+          "Alianzas para mejorar la atención sanitaria en Córdoba.",
+        ],
+        stats: [
+          { valor: "100", unidad: "%", label: "Vinculación" },
+          { valor: "1", unidad: "", label: "Red Regional" },
+        ],
+        tags: ["Cámara de Comercio", "Alianzas", "Salud"],
+        color: "#0f4c75",
+      },
+      {
+        id: "reti",
+        titulo: "Reti 5R - Semillero Verde",
+        logo: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/RETI%205R_page-00012.jpg",
+        descripcion:
+          "Educación ambiental y compromiso social con las familias y niños de nuestra comunidad. La mascota del voluntariado ambiental.",
+        porQue:
+          "Reti 5R es nuestra mascota que representa el compromiso con la educación ambiental y las 5R: Reducir, Reutilizar, Reciclar, Recuperar y Repensar.",
+        queHicieron: [
+          "Más de 100 niños formados en economía circular con el Semillero Verde.",
+          "Jornadas de Plogging (caminata + recolección de residuos) en comunidad.",
+          "Reinado del Reciclaje y actividades que integran familias y territorio.",
+        ],
+        stats: [
+          { valor: "100", unidad: "+", label: "Niños Formados" },
+          { valor: "0", unidad: "costo", label: "Voluntariado" },
+        ],
+        tags: ["Plogging", "Comunidad", "Futuro"],
+        color: "#F39C12",
       },
     ],
+  },
+  ucadSection: {
+    titulo: "UCAD Te Veo y Te Ves",
+    subtitulo: "Unidad Clínica de Alto Desempeño",
+    descripcion:
+      "Programa de prevención de ceguera por diabetes en Córdoba. Tamizaje, clasificación de severidad y seguimiento protocolizado para reducir la retinopatía diabética evitable.",
+    cta: "Conocer programa",
+    logo: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/img16.jpg",
+    ruta: "/ucad-te-veo-te-ves",
   },
   queRevisamos: {
     title: "¿Qué revisamos?",

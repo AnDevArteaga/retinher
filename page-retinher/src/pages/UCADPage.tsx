@@ -18,16 +18,10 @@ import {
   Search,
   Calendar,
 } from 'lucide-react'
+import { UCAD_COLORS } from '../constants/UCAD'
+import { Button } from '../components/ui/button'
 
 gsap.registerPlugin(ScrollTrigger)
-
-const UCAD_COLORS = {
-  azulProfundo: '#003366',
-  azulUCAD: '#0056b3',
-  verdeReti: '#28a745',
-  grisTecnico: '#f4f7f9',
-  rojoAlerta: '#dc3545',
-} as const
 
 export function UCADPage() {
   const heroRef = useRef<HTMLElement>(null)
@@ -46,28 +40,38 @@ export function UCADPage() {
   const UCAD_IMAGES = [
     {
       id: 'g1',
-      src: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1200&q=80',
-      alt: 'Atención oftalmológica',
+      src: '/1.jpeg',
+      alt: 'UCAD Te Veo y Te Ves',
     },
     {
       id: 'g2',
-      src: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=1200&q=80',
-      alt: 'Tecnología de vanguardia',
+      src: '/2.jpeg',
+      alt: 'UCAD Te Veo y Te Ves',
     },
     {
       id: 'g3',
-      src: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=1200&q=80',
-      alt: 'Examen de retina',
+      src: '/3.jpeg',
+      alt: 'UCAD Te Veo y Te Ves',
     },
     {
       id: 'g4',
-      src: 'https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1200&q=80',
-      alt: 'Cuidado visual',
+      src: '/4.jpeg',
+      alt: 'UCAD Te Veo y Te Ves',
     },
     {
       id: 'g5',
-      src: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80',
-      alt: 'Comunidad Córdoba',
+      src: '/5.jpeg',
+      alt: 'UCAD Te Veo y Te Ves',
+    },
+    {
+      id: 'g6',
+      src: '/6.jpeg',
+      alt: 'UCAD Te Veo y Te Ves',
+    },
+    {
+      id: 'g7',
+      src: '/7.jpeg',
+      alt: 'UCAD Te Veo y Te Ves',
     },
   ]
 
@@ -155,8 +159,10 @@ export function UCADPage() {
           }),
       })
 
-      const infographicLeft = infographicRef.current?.querySelector('.infographic-left')
-      const infographicRight = infographicRef.current?.querySelector('.infographic-right')
+      const infographicLeft =
+        infographicRef.current?.querySelector('.infographic-left')
+      const infographicRight =
+        infographicRef.current?.querySelector('.infographic-right')
       if (infographicLeft && infographicRight) {
         gsap.set(infographicLeft, { opacity: 0, x: -60 })
         gsap.set(infographicRight, { opacity: 0, x: 60 })
@@ -862,16 +868,17 @@ export function UCADPage() {
       {/* CTA final */}
       <section className="px-8 py-24">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-lg text-slate-600">
+          <p className="mb-8 text-lg text-slate-600">
             UCAD Te Veo y Te Ves — Un futuro sin retinopatía diabética evitable.
           </p>
-          <a
-            href="/nosotros"
-            className="mt-8 inline-block rounded-full px-10 py-4 font-bold text-white transition-all hover:opacity-90"
-            style={{ backgroundColor: UCAD_COLORS.azulUCAD }}
+          <Button
+            onClick={() => {
+              window.open('/UCAD.pdf', '_blank')
+            }}
+            className="!bg-slate-800 hover:!bg-[var(--color-title)] !border-gray-900"
           >
-            Conocer más sobre Retinher
-          </a>
+            Descargar presentación PDF
+          </Button>
         </div>
       </section>
     </div>

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { mockData } from '../data/MockData'
+import { mockData } from '../../data/MockData'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -10,8 +10,11 @@ export function SectionServicios() {
   const innerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    const isMobile = () => window.innerWidth < 768
+    if (isMobile()) return
+
     const ctx = gsap.context(() => {
-      const cardEls = gsap.utils.toArray<HTMLElement>('.service-card')
+      const cardEls = gsap.utils.toArray<HTMLElement>('.service-card-desktop')
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -92,12 +95,12 @@ export function SectionServicios() {
 
       <div
         ref={innerRef}
-        className="relative flex min-h-screen w-full flex-col items-center justify-between overflow-hidden py-24 md:py-32"
+        className="relative flex min-h-screen w-full flex-col items-center justify-between overflow-hidden py-12 sm:py-16 md:py-24 lg:py-32"
       >
         {/* TITULO FIJO */}
-        <div className="relative z-50 w-full text-center">
+        <div className="relative z-50 w-full text-center px-4">
           <h2
-            className="text-4xl md:text-5xl font-bold tracking-tighter"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter"
             style={{
               color: 'var(--color-title)',
               letterSpacing: '-0.01em',
@@ -107,15 +110,51 @@ export function SectionServicios() {
           </h2>
         </div>
 
-        {/* CONTENEDOR DE CARDS */}
-        <div className="relative h-[70vh] w-full max-w-7xl">
+        {/* MOBILE: Cards en fila vertical (una arriba de otra) */}
+        <div className="flex flex-col gap-8 sm:gap-10 md:hidden w-full max-w-2xl mx-auto px-4">
           {mockData.services.map((s, i) => (
             <article
               key={s.id}
-              className="service-card absolute inset-0 flex items-center justify-center px-6"
+              className="flex flex-col gap-4 sm:gap-6 rounded-2xl overflow-hidden bg-white shadow-lg border border-slate-100"
             >
-              <div className="grid h-full w-full grid-cols-1 md:grid-cols-2 items-center gap-10">
-                <div className="service-img-wrapper z-0 overflow-hidden shadow-2xl">
+              <div className="aspect-video w-full overflow-hidden">
+                <img
+                  src={s.image}
+                  alt={s.title}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="p-5 sm:p-6 flex flex-col text-left">
+                <span className="text-[var(--color-btn)] font-black text-xs uppercase tracking-[0.4em] mb-2">
+                  Servicio 0{i + 1}
+                </span>
+                <h3
+                  className="text-xl sm:text-2xl font-bold tracking-tighter"
+                  style={{
+                    color: 'var(--color-title)',
+                    lineHeight: '0.95',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {s.title}
+                </h3>
+                <p className="mt-3 text-sm sm:text-base text-slate-500 font-light leading-relaxed">
+                  {s.description}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* DESKTOP: Contenedor con animación pin/scroll */}
+        <div className="hidden md:block relative min-h-[50vh] sm:min-h-[60vh] md:h-[70vh] w-full max-w-7xl">
+          {mockData.services.map((s, i) => (
+            <article
+              key={s.id}
+              className="service-card-desktop absolute inset-0 flex items-center justify-center px-4 sm:px-6"
+            >
+              <div className="grid h-full w-full grid-cols-1 md:grid-cols-2 items-center gap-6 sm:gap-8 md:gap-10">
+                <div className="service-img-wrapper z-0 overflow-hidden shadow-2xl rounded-2xl">
                   <img
                     src={s.image}
                     alt={s.title}
@@ -131,7 +170,7 @@ export function SectionServicios() {
                     Servicio 0{i + 1}
                   </span>
                   <h3
-                    className="text-5xl md:text-7xl font-bold tracking-tighter"
+                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-bold tracking-tighter"
                     style={{
                       color: 'var(--color-title)',
                       lineHeight: '0.95',
@@ -141,7 +180,7 @@ export function SectionServicios() {
                   >
                     {s.title}
                   </h3>
-                  <p className="mt-8 text-xl text-slate-500 font-light leading-relaxed max-w-md">
+                  <p className="mt-4 sm:mt-6 md:mt-8 text-base sm:text-lg md:text-xl text-slate-500 font-light leading-relaxed max-w-md">
                     {s.description}
                   </p>
                 </div>
@@ -150,8 +189,8 @@ export function SectionServicios() {
           ))}
         </div>
 
-        {/* CTA FIJO - Adaptado a fondo blanco */}
-        <div className="relative z-50 w-full flex justify-center">
+        {/* CTA - Adaptado a fondo blanco */}
+        <div className="relative z-50 w-full flex justify-center mt-8 md:mt-0">
           <a
             href="#"
             className="inline-flex h-14 items-center justify-center rounded-full w-md text-sm font-bold uppercase cursor-none tracking-widest text-white transition-all hover:scale-105 active:scale-95"

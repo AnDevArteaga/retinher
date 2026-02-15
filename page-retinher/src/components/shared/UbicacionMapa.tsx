@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { mockData } from '../data/MockData'
+import { mockData } from '../../data/MockData'
 
 gsap.registerPlugin(ScrollTrigger)
 

@@ -240,6 +240,51 @@ export function NosotrosPage() {
         </div>
       </section>
 
+      {/* 6. SERVICIOS — 2x2 grid, reveal */}
+      <section ref={serviciosRef} className="bg-[#f8f9fa] py-32">
+        <div className="mx-auto max-w-7xl px-10">
+          <div className="mb-20 text-center">
+            <h2 className="text-5xl mb-10 md:text-7xl font-bold tracking-tighter text-[var(--color-title)]">
+              Nuestros Servicios
+            </h2>
+            <p className="mb-20 text-lg text-center text-slate-500 leading-relaxed">
+              {intro}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            {serviceGroups.map((group, index) => (
+              <div
+                key={group.id}
+                className="servicio-card-reveal group flex flex-col rounded-[3rem] border border-slate-200 bg-white p-12 transition-all hover:shadow-2xl"
+              >
+                <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-[var(--color-btn)] font-black text-xl group-hover:bg-[var(--color-btn)] group-hover:text-white transition-colors duration-500">
+                  0{index + 1}
+                </div>
+
+                <h3 className="mb-8 text-3xl font-bold text-[var(--color-title)] uppercase tracking-tight">
+                  {group.title}
+                </h3>
+
+                <ul className="grid grid-cols-1 gap-4">
+                  {group.items.map((item, i) => (
+                    <li
+                      key={i}
+                      className="flex items-center gap-4 text-slate-500 font-light"
+                    >
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-btn)]" />
+                      <span className="text-base md:text-lg leading-tight">
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 4. ECOSISTEMA DE IMPACTO — Bento Grid */}
       <section
         ref={impactoSectionRef}
@@ -302,51 +347,6 @@ export function NosotrosPage() {
                 <p key={i}>{paragraph}</p>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. SERVICIOS — 2x2 grid, reveal */}
-      <section ref={serviciosRef} className="bg-[#f8f9fa] py-32">
-        <div className="mx-auto max-w-7xl px-10">
-          <div className="mb-20 text-center">
-            <h2 className="text-5xl mb-10 md:text-7xl font-bold tracking-tighter text-[var(--color-title)]">
-              Nuestros Servicios
-            </h2>
-            <p className="mb-20 text-lg text-center text-slate-500 leading-relaxed">
-              {intro}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {serviceGroups.map((group, index) => (
-              <div
-                key={group.id}
-                className="servicio-card-reveal group flex flex-col rounded-[3rem] border border-slate-200 bg-white p-12 transition-all hover:shadow-2xl"
-              >
-                <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-[var(--color-btn)] font-black text-xl group-hover:bg-[var(--color-btn)] group-hover:text-white transition-colors duration-500">
-                  0{index + 1}
-                </div>
-
-                <h3 className="mb-8 text-3xl font-bold text-[var(--color-title)] uppercase tracking-tight">
-                  {group.title}
-                </h3>
-
-                <ul className="grid grid-cols-1 gap-4">
-                  {group.items.map((item, i) => (
-                    <li
-                      key={i}
-                      className="flex items-center gap-4 text-slate-500 font-light"
-                    >
-                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-btn)]" />
-                      <span className="text-base md:text-lg leading-tight">
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
           </div>
         </div>
       </section>

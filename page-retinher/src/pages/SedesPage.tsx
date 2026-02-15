@@ -3,7 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { MapPin, Clock, Phone, Mail } from 'lucide-react'
 import { mockData } from '../data/MockData'
-import { UbicacionMapa } from '../components/UbicacionMapa'
+import { UbicacionMapa } from '../components/shared/UbicacionMapa'
 
 gsap.registerPlugin(ScrollTrigger)
 

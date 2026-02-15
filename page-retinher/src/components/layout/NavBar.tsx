@@ -1,18 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { NAV_LINKS } from '../../constants/routes'
 
 export function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
-
-  const links = [
-    { to: '/', label: 'Inicio' },
-    { to: '/nosotros', label: 'Nosotros' },
-    { to: '/ucad-te-veo-te-ves', label: 'UCAD Te Veo y Te Ves' },
-    { to: '/sedes', label: 'Sedes' },
-    { to: '/contacto', label: 'Contacto' },
-  ]
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,7 +29,6 @@ export function NavBar() {
       aria-label="Navegación principal"
     >
       <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:pl-6 sm:pr-6 lg:px-8">
-        {/* Logo: izquierda; transparente = blanco con filtro */}
         <Link
           to="/"
           className="flex shrink-0 items-center transition-opacity hover:opacity-90 md:w-auto"
@@ -51,12 +43,11 @@ export function NavBar() {
           />
         </Link>
 
-        {/* Desktop: links centrados en la barra (absoluto para no depender del logo) */}
         <nav
-          className="absolute left-1/2 top-1/2 hidden translate-x-1/2 -translate-y-1/2 items-center gap-8 md:flex"
+          className="absolute left-1/2 top-1/2 hidden translate-x-1/2 -translate-y-1/2 items-center gap-8 min-[1600px]:flex"
           aria-label="Enlaces principales"
         >
-          {links.map((item) => (
+          {NAV_LINKS.map((item) => (
             <Link
               key={item.to}
               to={item.to}
@@ -77,11 +68,10 @@ export function NavBar() {
           ))}
         </nav>
 
-        {/* Derecha: en desktop espacer para equilibrar; en móvil hamburguesa */}
-        <div className="flex w-24 shrink-0 justify-end md:w-36">
+        <div className="flex w-24 shrink-0 justify-end min-[1600px]:w-36">
           <button
             type="button"
-            className={`flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-lg transition-colors md:hidden ${
+            className={`flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-lg transition-colors min-[1600px]:hidden ${
               isTransparent ? 'text-white' : 'text-[var(--color-text)]'
             }`}
             onClick={() => setMobileOpen((o) => !o)}
@@ -107,9 +97,8 @@ export function NavBar() {
         </div>
       </div>
 
-      {/* Mobile: menú desplegable */}
       <div
-        className={`overflow-hidden transition-all duration-300 ease-out md:hidden ${
+        className={`overflow-hidden transition-all duration-300 ease-out min-[1600px]:hidden ${
           mobileOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
@@ -118,7 +107,7 @@ export function NavBar() {
           aria-label="Menú móvil"
         >
           <ul className="flex flex-col gap-1">
-            {links.map((item) => (
+            {NAV_LINKS.map((item) => (
               <li key={item.to}>
                 <Link
                   to={item.to}

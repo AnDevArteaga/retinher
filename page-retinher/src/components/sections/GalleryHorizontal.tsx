@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { mockData } from "../data/MockData";
+import { mockData } from "../../data/MockData";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -54,26 +54,26 @@ export function GalleryHorizontal() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative h-screen overflow-hidden bg-[var(--color-bg-primary)]" id="gallery">
-      <div className="absolute left-0 top-0 z-10 px-6 pt-24 md:px-12">
+    <section ref={sectionRef} className="relative min-h-screen overflow-hidden bg-[var(--color-bg-primary)]" id="gallery">
+      <div className="absolute left-0 top-0 z-10 px-4 sm:px-6 md:px-12 pt-20 sm:pt-24">
         <h2
           ref={titleRef}
-          className="text-4xl font-bold tracking-tighter md:text-5xl lg:text-6xl"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tighter"
           style={{ color: "var(--color-title)" }}
         >
           {mockData.gallery.title}
         </h2>
-        <p className="mt-2 text-lg text-[var(--color-text-muted)]">{mockData.gallery.subtitle}</p>
+        <p className="mt-2 text-sm sm:text-base md:text-lg text-[var(--color-text-muted)]">{mockData.gallery.subtitle}</p>
       </div>
       <div
         ref={trackRef}
-        className="absolute left-0 top-0 flex h-full items-center gap-6 pl-6 pt-32 md:gap-8 md:pl-12"
+        className="absolute left-0 top-0 flex h-full items-center gap-4 sm:gap-6 md:gap-8 pl-4 sm:pl-6 md:pl-12 pt-28 sm:pt-32"
         style={{ width: "max-content" }}
       >
         {mockData.gallery.items.map((item) => (
           <div
             key={item.id}
-            className="relative flex h-[70vh] w-[85vw] flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[var(--color-text-muted)]/20 bg-[var(--color-bg-secondary)] md:w-[70vw] lg:w-[55vw]"
+            className="relative flex h-[60vh] sm:h-[65vh] md:h-[70vh] w-[80vw] sm:w-[82vw] md:w-[70vw] lg:w-[55vw] flex-shrink-0 items-center justify-center overflow-hidden rounded-xl sm:rounded-2xl border border-[var(--color-text-muted)]/20 bg-[var(--color-bg-secondary)]"
           >
             {item.type === "video" ? (
               <video
@@ -96,7 +96,7 @@ export function GalleryHorizontal() {
             </div>
           </div>
         ))}
-        <div className="h-[70vh] w-[20px] flex-shrink-0" aria-hidden />
+        <div className="h-[60vh] sm:h-[65vh] md:h-[70vh] w-4 sm:w-5 flex-shrink-0" aria-hidden />
       </div>
     </section>
   );

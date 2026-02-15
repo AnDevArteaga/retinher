@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import gsap from "gsap";
-import { mockData } from "../data/MockData";
+import { mockData } from "../../data/MockData";
 
 type VisionStage = "idle" | "calibration" | "test" | "feedback";
 type EDirection = "arriba" | "abajo" | "izquierda" | "derecha";
@@ -134,16 +134,16 @@ export function VisionTest() {
 
   return (
     <section ref={sectionRef} className="section section-vision" id="vision-lab">
-      <div className="mx-auto flex min-h-[100vh] w-full max-w-4xl flex-col items-center justify-center px-6 py-24">
+      <div className="mx-auto flex min-h-[100vh] w-full max-w-4xl flex-col items-center justify-center px-4 sm:px-6 py-16 sm:py-20 md:py-24">
         {stage === "idle" && (
           <div className="text-center">
             <h2
-              className="text-4xl font-bold tracking-tight md:text-5xl"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight"
               style={{ color: "var(--color-title)" }}
             >
               {mockData.visionLab.title}
             </h2>
-            <p className="mt-4 text-lg text-[var(--color-text-muted)]">{mockData.visionLab.tagline}</p>
+            <p className="mt-4 text-sm sm:text-base md:text-lg text-[var(--color-text-muted)]">{mockData.visionLab.tagline}</p>
             <button
               type="button"
               onClick={startCalibration}

@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { RevealText } from './RevealText'
-import { mockData } from '../data/MockData'
-import { Button } from './ui/button'
+import { RevealText } from '../shared/RevealText'
+import { mockData } from '../../data/MockData'
+import { Button } from '../ui/button'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -15,7 +15,6 @@ export function SectionAbout() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       // 1. Efecto de Revelado de Texto con el Scroll (Scrub)
-      // Esto hace que el título se sienta que "se escribe" o "se enfoca" al bajar
       const words = sectionRef.current?.querySelectorAll('.reveal-unit')
 
       if (words) {
@@ -31,13 +30,12 @@ export function SectionAbout() {
               trigger: sectionRef.current,
               start: 'top 80%',
               end: 'top 20%',
-              scrub: 1, // El scroll controla la animación de ida y vuelta
+              scrub: 1,
             },
           },
         )
       }
 
-      // 2. Movimiento Parallax sutil de los párrafos
       gsap.from(textContentRef.current, {
         y: 100,
         opacity: 0,
@@ -59,7 +57,6 @@ export function SectionAbout() {
       className="relative min-h-screen bg-[var(--color-title-dark)] flex items-center justify-center overflow-hidden"
       id="que-hacemos"
     >
-      {/* Elemento Decorativo: destello con color de marca */}
       <div
         className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none"
         style={{
@@ -70,13 +67,12 @@ export function SectionAbout() {
 
       <div
         ref={containerRef}
-        className="mx-auto w-full max-w-7xl px-6 py-32 md:px-12"
+        className="mx-auto w-full max-w-7xl px-4 sm:px-6 md:px-12 py-16 sm:py-20 md:py-24 lg:py-32"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Columna Izquierda: Título Gigante y Pegajoso */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-12 md:gap-16 items-center">
           <div className="lg:sticky lg:top-32">
             <h2
-              className="text-5xl font-bold leading-[0.9] tracking-tighter text-white md:text-7xl lg:text-7xl"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[0.9] tracking-tighter text-white"
               style={{
                 letterSpacing: '-0.02em',
                 wordSpacing: '0.1em',
@@ -91,22 +87,20 @@ export function SectionAbout() {
             </h2>
           </div>
 
-          {/* Columna Derecha: Contenido */}
-          <div ref={textContentRef} className="space-y-12">
-            <div className="space-y-8">
-              <p className="text-lg md:text-xl leading-relaxed text-white/60 font-light">
+          <div ref={textContentRef} className="space-y-8 sm:space-y-10 md:space-y-12">
+            <div className="space-y-6 sm:space-y-8">
+              <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white/60 font-light">
                 <span
                   dangerouslySetInnerHTML={{ __html: mockData.about.intro }}
                 />
               </p>
-              <p className="text-lg md:text-xl leading-relaxed text-white/60 font-light">
+              <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white/60 font-light">
                 <span
                   dangerouslySetInnerHTML={{ __html: mockData.about.purpose }}
                 />
               </p>
             </div>
 
-            {/* Botón Mejorado (Sin dependencia de UI library para evitar errores de estilo) */}
             <div className="pt-4">
               <Button>
                 <span className="relative z-10 flex items-center gap-3 group-hover:text-white">
