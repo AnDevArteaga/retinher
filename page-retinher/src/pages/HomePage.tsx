@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Hero } from '../components/sections/Hero'
+import { SectionDoctor } from '../components/sections/SectionDoctor'
 import { SectionReconocimientos } from '../components/sections/SectionReconocimientos'
 import { SectionUCAD } from '../components/sections/SectionUCAD'
 import { SectionAbout } from '../components/sections/SectionAbout'
@@ -38,6 +39,7 @@ export function HomePage() {
   return (
     <div ref={wrapperRef} className="relative">
       <Hero />
+      <SectionDoctor />
       <SectionReconocimientos />
       <SectionUCAD />
       <SectionServicios />

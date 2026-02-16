@@ -1,4 +1,11 @@
 export const mockData = {
+  doctor: {
+    nombre: "Dr. Hernando Henríquez",
+    titulo: "Fundador y líder visionario de Retinher S.A.S",
+    descripcion:
+      "Como retinólogo, su práctica se centra en la excelencia clínica y la innovación tecnológica para combatir la ceguera evitable.",
+    imagen: "https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/IMG_1066.heic",
+  },
   hero: {
     headline: "La evolución de tu mirada",
     subline: "RETINHER",
