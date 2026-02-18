@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { useMemo } from 'react'
 import { CustomCursor } from './components/shared/CustomCursor'
 import { FloatingWhatsApp } from './components/shared/FloatingWhatsApp'
 import { NavBar } from './components/layout/NavBar'
@@ -7,26 +8,56 @@ import { HomePage } from './pages/HomePage'
 import { NosotrosPage } from './pages/NosotrosPage'
 import { UCADPage } from './pages/UCADPage'
 import { SedesPage } from './pages/SedesPage'
+import { ContentProvider, useContent } from './contexts/ContentContext'
+import type { PageSlug } from './data/contentApi'
+
+function slugFromPathname(pathname: string): PageSlug {
+  if (pathname === '/' || pathname.startsWith('/ucad')) return 'home'
+  if (pathname === '/nosotros') return 'nosotros'
+  if (pathname === '/sedes') return 'sedes'
+  return 'home'
+}
+
+function AppContent() {
+  const { loading, error } = useContent()
+  if (error) return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-[var(--color-text-muted)]">Cargando…</div>
+  return (
+    <>
+      <CustomCursor />
+      <FloatingWhatsApp />
+      <NavBar />
+      <main className="relative">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/nosotros" element={<NosotrosPage />} />
+          <Route path="/ucad-te-veo-te-ves" element={<UCADPage />} />
+          <Route path="/sedes" element={<SedesPage />} />
+        </Routes>
+      </main>
+      <Footer />
+    </>
+  )
+}
 
 function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-[var(--color-bg-primary)]">
         <div className="grain" aria-hidden />
-        <CustomCursor />
-        <FloatingWhatsApp />
-        <NavBar />
-        <main className="relative">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/nosotros" element={<NosotrosPage />} />
-            <Route path="/ucad-te-veo-te-ves" element={<UCADPage />} />
-            <Route path="/sedes" element={<SedesPage />} />
-          </Routes>
-        </main>
-        <Footer />
+        <ContentProviderWithSlug />
       </div>
     </BrowserRouter>
+  )
+}
+
+function ContentProviderWithSlug() {
+  const location = useLocation()
+  const slug = useMemo(() => slugFromPathname(location.pathname), [location.pathname])
+  return (
+    <ContentProvider slug={slug}>
+      <AppContent />
+    </ContentProvider>
   )
 }
 

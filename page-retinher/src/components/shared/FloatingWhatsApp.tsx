@@ -1,9 +1,10 @@
-import { mockData } from '../../data/MockData'
-
-const { numero, mensaje } = mockData.whatsapp
-const waUrl = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
+import { useContent } from '../../contexts/ContentContext'
 
 export function FloatingWhatsApp() {
+  const { data } = useContent()
+  const whatsapp = (data as { whatsapp?: { numero: string; mensaje: string } })?.whatsapp
+  if (!whatsapp) return null
+  const waUrl = `https://wa.me/${whatsapp.numero}?text=${encodeURIComponent(whatsapp.mensaje)}`
   return (
     <a
       href={waUrl}

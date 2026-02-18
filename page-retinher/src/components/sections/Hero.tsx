@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { RevealText } from '../shared/RevealText'
-import { mockData } from '../../data/MockData'
+import { useContent } from '../../contexts/ContentContext'
 import { Button } from '../ui/button'
 import video from '../../assets/hero.mp4'
 
 export function Hero() {
+  const { data } = useContent()
+  const hero = (data as { hero?: { headline: string; subline: string; brandLine: string; cta: string } })?.hero
   const videoRef = useRef<HTMLVideoElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const infoRef = useRef<HTMLDivElement>(null)
@@ -52,6 +54,8 @@ export function Hero() {
     return () => ctx.revert()
   }, [])
 
+  if (!hero) return null
+
   return (
     <section
       ref={sectionRef}
@@ -89,7 +93,7 @@ export function Hero() {
             }}
           >
             <RevealText
-              text={mockData.hero.headline}
+              text={hero.headline}
               splitBy="words"
               skipAutoAnimate
               className="inline-block"
@@ -110,11 +114,11 @@ export function Hero() {
               className="text-base sm:text-xl font-light tracking-[0.15em] sm:tracking-[0.2em] uppercase md:text-2xl font-semibold"
               style={{ color: '#3d3f89' }}
             >
-              {mockData.hero.subline}
+              {hero.subline}
             </p>
             <span className="hidden h-5 sm:h-6 w-[1px] bg-white/30 md:inline-block" />
             <p className="text-sm sm:text-lg font-medium tracking-tight text-white/80 md:text-xl">
-              {mockData.hero.brandLine}
+              {hero.brandLine}
             </p>
           </div>
 
@@ -122,7 +126,7 @@ export function Hero() {
           <a href="#que-hacemos">
             <Button className="cursor-none">
               <span className="relative z-10 flex items-center gap-3 group-hover:text-white">
-                {mockData.hero.cta}
+                {hero.cta}
               </span>
               <div className="absolute inset-0 z-0 translate-y-full bg-[var(--color-btn)] transition-transform duration-500 ease-expo group-hover:translate-y-0" />
             </Button>

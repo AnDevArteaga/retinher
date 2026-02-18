@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
-import { mockData } from '../../data/MockData'
+import { useContent } from '../../contexts/ContentContext'
 import { UCAD_COLORS } from '../../constants/UCAD'
 
-const { titulo, subtitulo, descripcion, cta, logo, ruta } = mockData.ucadSection
-
 export function SectionUCAD() {
+  const { data } = useContent()
+  const ucad = (data as { ucadSection?: { titulo: string; subtitulo: string; descripcion: string; cta: string; logo: string; ruta: string } })?.ucadSection
+  if (!ucad) return null
+  const { titulo, subtitulo, descripcion, cta, logo, ruta } = ucad
   return (
     <section
       className="relative w-full overflow-hidden border-t border-slate-100 py-16 sm:py-20 md:py-24 lg:py-32 font-sans"

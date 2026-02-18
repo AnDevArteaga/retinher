@@ -1,241 +1,343 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import gsap from "gsap";
-import { mockData } from "../../data/MockData";
+import { useState, useRef } from 'react'
+import gsap from 'gsap'
 
-type VisionStage = "idle" | "calibration" | "test" | "feedback";
-type EDirection = "arriba" | "abajo" | "izquierda" | "derecha";
+function shuffleArray<T>(arr: T[]): T[] {
+  const out = [...arr]
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[out[i], out[j]] = [out[j], out[i]]
+  }
+  return out
+}
 
-const E_DIRECTIONS: EDirection[] = ["arriba", "abajo", "izquierda", "derecha"];
+const ISHIHARA_NUMEROS = [
+  '3',
+  '5',
+  '6',
+  '7',
+  '8',
+  '12',
+  '29',
+  '42',
+  '45',
+  '56',
+  '74',
+  '89',
+]
+
+function buildIshiharaOpciones(correct: string): string[] {
+  const otros = ISHIHARA_NUMEROS.filter((n) => n !== correct)
+  const wrong1 = otros[Math.floor(Math.random() * otros.length)]
+  let wrong2 = otros[Math.floor(Math.random() * otros.length)]
+  while (wrong2 === wrong1)
+    wrong2 = otros[Math.floor(Math.random() * otros.length)]
+  return shuffleArray([correct, wrong1, wrong2, 'No veo nada'])
+}
 
 export function VisionTest() {
-  const [stage, setStage] = useState<VisionStage>("idle");
-  const [results, setResults] = useState<{ correct: number; total: number }>({ correct: 0, total: 0 });
-  const [currentDirection, setCurrentDirection] = useState<EDirection>("arriba");
-  const [feedbackCorrect, setFeedbackCorrect] = useState<boolean | null>(null);
-  const [round, setRound] = useState(0);
+  const [step, setStep] = useState(-1) // -1: Inicio, 0: Snellen, 1: Duocromo, 2: Astigmatismo, 3: Ishihara, 4: Resultados
+  const [subStep, setSubStep] = useState(0)
+  const [respuestas, setRespuestas] = useState<{
+    snellen: string[]
+    duocromo: string
+    astigmatismo: string
+    ishihara: string[]
+  }>({
+    snellen: [],
+    duocromo: '',
+    astigmatismo: '',
+    ishihara: [],
+  })
+  const [ishiharaOpciones, setIshiharaOpciones] = useState<string[]>([])
+  const cardRef = useRef(null)
 
-  const calibrationRef = useRef<HTMLDivElement>(null);
-  const eyeRef = useRef<HTMLDivElement>(null);
-  const eRef = useRef<HTMLDivElement>(null);
-  const feedbackRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLElement>(null);
+  // --- CONFIGURACIÓN DE LOS EJERCICIOS ---
+  const SNELLEN_STEPS = [
+    { size: 'text-8xl', rotation: 0, label: 'Derecha' }, // Grande
+    { size: 'text-4xl', rotation: 180, label: 'Izquierda' }, // Mediana
+    { size: 'text-xl', rotation: 90, label: 'Abajo' }, // Pequeña
+  ]
 
-  const TOTAL_ROUNDS = 6;
-
-  const pickRandomDirection = useCallback((): EDirection => {
-    return E_DIRECTIONS[Math.floor(Math.random() * E_DIRECTIONS.length)];
-  }, []);
-
-  const startCalibration = useCallback(() => {
-    setStage("calibration");
-    setFeedbackCorrect(null);
-  }, []);
-
-  useEffect(() => {
-    if (stage !== "calibration") return;
-    const ctx = gsap.context(() => {
-      const eye = eyeRef.current;
-      const calibration = calibrationRef.current;
-      if (!eye || !calibration) return;
-
-      const beam = calibration.querySelector(".calibration-beam");
-      gsap.set(eye, { scale: 0.8, opacity: 0 });
-      gsap.set(beam, { scaleX: 0 });
-
-      const tl = gsap.timeline({
-        onComplete: () => {
-          setStage("test");
-          setCurrentDirection(pickRandomDirection());
-          setRound(1);
-          setResults((r) => ({ ...r, total: 1 }));
-        },
-      });
-      tl.to(eye, { scale: 1, opacity: 1, duration: 0.5, ease: "power4.out" })
-        .to(beam, { scaleX: 1, duration: 1.2, ease: "power2.inOut" }, "-=0.2")
-        .to(beam, { scaleX: 0, duration: 0.3 }, "+=0.2");
-    }, sectionRef);
-    return () => ctx.revert();
-  }, [stage, pickRandomDirection]);
-
-  const answer = useCallback(
-    (userChoice: EDirection) => {
-      if (stage !== "test") return;
-      const correct = userChoice === currentDirection;
-      setFeedbackCorrect(correct);
-      setResults((r) => ({
-        correct: r.correct + (correct ? 1 : 0),
-        total: r.total,
-      }));
-      setStage("feedback");
+  const ISHIHARA_STEPS = [
+    {
+      img: 'https://www.colorlitelens.com/images/Ishihara/Ishihara_07.jpg',
+      correct: '45',
     },
-    [stage, currentDirection]
-  );
+    {
+      img: 'https://amamedicalproducts.com.au/cdn/shop/files/Ishihara-Colour-Blind-Test-Kanehara-14-Plate-1_1500x.png?v=1700466029',
+      correct: '74',
+    },
+    {
+      img: 'https://iristech.co/wp-content/uploads/2018/05/ishihara-number.jpg',
+      correct: '12',
+    },
+    {
+      img: 'https://www.colorlitelens.com/images/Ishihara/Ishihara_11.jpg',
+      correct: '42',
+    },
+  ]
 
-  useEffect(() => {
-    if (stage !== "feedback") return;
-    const ctx = gsap.context(() => {
-      const fb = feedbackRef.current;
-      if (!fb) return;
-      gsap.set(fb, { opacity: 0, scale: 0.95 });
-      gsap.to(fb, { opacity: 1, scale: 1, duration: 0.35, ease: "power4.out" });
-      if (feedbackCorrect === true) {
-        const scan = fb.querySelector(".feedback-scan");
-        gsap.fromTo(scan, { scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: "power4.out" });
-      }
-      if (feedbackCorrect === false) {
-        const glitch = fb.querySelector(".feedback-glitch");
-        gsap.to(glitch, { x: -4, duration: 0.05, repeat: 5, yoyo: true });
-      }
-    }, sectionRef);
-    return () => ctx.revert();
-  }, [stage, feedbackCorrect]);
+  // --- LÓGICA DE NAVEGACIÓN ---
+  const nextStep = () => {
+    gsap.to(cardRef.current, {
+      opacity: 0,
+      y: -20,
+      duration: 0.3,
+      onComplete: () => {
+        setStep((prev) => prev + 1)
+        setSubStep(0)
+        if (step === 2)
+          setIshiharaOpciones(buildIshiharaOpciones(ISHIHARA_STEPS[0].correct))
+        gsap.fromTo(
+          cardRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.4 },
+        )
+      },
+    })
+  }
 
-  const nextRound = useCallback(() => {
-    if (round >= TOTAL_ROUNDS) {
-      setStage("idle");
-      setRound(0);
-      return;
-    }
-    setStage("test");
-    setCurrentDirection(pickRandomDirection());
-    setRound((r) => r + 1);
-    setResults((prev) => ({ ...prev, total: prev.total + 1 }));
-    setFeedbackCorrect(null);
-  }, [round, pickRandomDirection]);
+  // --- RENDERIZADO DE RESULTADOS REALES ---
+  const renderInforme = () => {
+    const hallazgos: string[] = []
+    const fallosSnellen = respuestas.snellen.filter(
+      (r, i) => r !== SNELLEN_STEPS[i].label,
+    ).length
+    const fallosIshihara = respuestas.ishihara.filter(
+      (r, i) => r !== ISHIHARA_STEPS[i].correct,
+    ).length
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (stage !== "test") return;
-      const map: Record<string, EDirection> = {
-        ArrowUp: "arriba",
-        ArrowDown: "abajo",
-        ArrowLeft: "izquierda",
-        ArrowRight: "derecha",
-      };
-      const dir = map[e.key];
-      if (dir) {
-        e.preventDefault();
-        answer(dir);
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [stage, answer]);
+    if (fallosSnellen > 1)
+      hallazgos.push(
+        'Baja agudeza visual detectada. Requiere examen de refracción.',
+      )
+    if (respuestas.duocromo === 'Rojo')
+      hallazgos.push('Tendencia a Miopía (enfoca mejor en longitudes largas).')
+    if (respuestas.duocromo === 'Verde')
+      hallazgos.push(
+        'Tendencia a Hipermetropía (enfoca mejor en longitudes cortas).',
+      )
+    if (respuestas.astigmatismo === 'Sí')
+      hallazgos.push('Signos de Astigmatismo (curvatura corneal irregular).')
+    if (fallosIshihara > 1)
+      hallazgos.push('Deficiencia en percepción de color (Posible Daltonismo).')
 
-  const getEStyle = (): React.CSSProperties => {
-    const transform = {
-      arriba: "rotate(0deg)",
-      abajo: "rotate(180deg)",
-      izquierda: "rotate(-90deg)",
-      derecha: "rotate(90deg)",
-    }[currentDirection];
-    return { transform };
-  };
+    return hallazgos.length > 0
+      ? hallazgos
+      : [
+          'Tu visión parece estar dentro de los rangos normales para este tamizaje.',
+        ]
+  }
 
   return (
-    <section ref={sectionRef} className="section section-vision" id="vision-lab">
-      <div className="mx-auto flex min-h-[100vh] w-full max-w-4xl flex-col items-center justify-center px-4 sm:px-6 py-16 sm:py-20 md:py-24">
-        {stage === "idle" && (
-          <div className="text-center">
-            <h2
-              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight"
-              style={{ color: "var(--color-title)" }}
-            >
-              {mockData.visionLab.title}
+    <section className="min-h-screen bg-slate-100 py-20 flex items-center justify-center font-sans">
+      <div className="max-w-2xl w-full px-6" ref={cardRef}>
+        {/* INICIO */}
+        {step === -1 && (
+          <div className="p-12 text-center">
+            <h2 className="text-4xl font-black text-slate-900 mb-6 tracking-tight">
+              Evaluación Visual <br />
+              <span className="text-[var(--color-title)] uppercase text-sm tracking-[0.3em]">
+                Nivel Clínico
+              </span>
             </h2>
-            <p className="mt-4 text-sm sm:text-base md:text-lg text-[var(--color-text-muted)]">{mockData.visionLab.tagline}</p>
+            <p className="text-slate-500 mb-8 leading-relaxed">
+              Este test interactivo evalúa agudeza, contraste, enfoque y
+              percepción de color.
+            </p>
             <button
-              type="button"
-              onClick={startCalibration}
-              className="mt-10 rounded-full px-8 py-4 text-base font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ backgroundColor: "var(--color-btn)" }}
-              data-cursor-magnetic
+              onClick={() => setStep(0)}
+              className="w-full bg-[var(--color-btn)] text-white py-4 rounded-2xl font-bold hover:shadow-lg transition-all"
             >
-              Iniciar test de visión
+              Iniciar Test
             </button>
           </div>
         )}
 
-        {stage === "calibration" && (
-          <div ref={calibrationRef} className="flex flex-col items-center">
-            <p className="mb-8 text-lg text-[var(--color-text)]">{mockData.visionLab.calibration}</p>
-            <p className="mb-6 text-sm text-[var(--color-text-muted)]">{mockData.visionLab.calibrationDesc}</p>
-            <div ref={eyeRef} className="relative">
-              <div className="h-24 w-24 rounded-full border-2 border-[var(--color-title)]/40 bg-[var(--color-bg-secondary)] md:h-32 md:w-32" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-4 w-4 rounded-full shadow-[0_0_20px_rgba(255,102,0,0.5)]" style={{ backgroundColor: "var(--color-btn)" }} />
+        {/* 1. TEST DE SNELLEN DINÁMICO (LA LETRA E) */}
+        {step === 0 && (
+          <div className="p-10 text-center">
+            <span className="text-blue-600 font-black text-xs uppercase tracking-widest">
+              Agudeza Visual (Nivel {subStep + 1})
+            </span>
+            <div className="my-12 flex justify-center items-center h-40">
+              <div
+                className={`font-sans font-bold text-black transition-all duration-500 ${SNELLEN_STEPS[subStep].size}`}
+                style={{
+                  transform: `rotate(${SNELLEN_STEPS[subStep].rotation}deg)`,
+                }}
+              >
+                E
               </div>
             </div>
-            <div
-              className="calibration-beam absolute left-1/2 top-1/2 h-px w-[80vw] origin-center -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-transparent via-[var(--color-btn)] to-transparent"
-              style={{ transform: "scaleX(0)" }}
-            />
-          </div>
-        )}
-
-        {stage === "test" && (
-          <div ref={eRef} className="flex flex-col items-center">
-            <p className="mb-6 text-[var(--color-text)]">{mockData.visionLab.testInstruction}</p>
-            <p className="mb-4 text-sm text-[var(--color-text-muted)]">
-              Ronda {round} / {TOTAL_ROUNDS} — Usa flechas del teclado o botones
+            <p className="mb-8 font-medium">
+              ¿Hacia dónde apuntan las "patas" de la E?
             </p>
-            <div
-              className="flex h-32 w-32 items-center justify-center rounded-xl bg-[var(--color-bg-secondary)] md:h-40 md:w-40"
-              style={getEStyle()}
-            >
-              <span className="text-7xl font-bold md:text-8xl" style={{ color: "var(--color-title)" }}>E</span>
-            </div>
-            <div className="mt-10 flex gap-4">
-              {E_DIRECTIONS.map((dir) => (
+            <div className="grid grid-cols-2 gap-4">
+              {['Arriba', 'Abajo', 'Izquierda', 'Derecha'].map((dir) => (
                 <button
                   key={dir}
-                  type="button"
-                  onClick={() => answer(dir)}
-                  className="rounded-lg border border-[var(--color-title)]/30 px-4 py-2 text-sm transition-colors hover:opacity-90"
-                  style={{ color: "var(--color-title)", backgroundColor: "var(--color-bg-secondary)" }}
-                  data-cursor-magnetic
+                  onClick={() => {
+                    const r = [...respuestas.snellen, dir]
+                    setRespuestas({ ...respuestas, snellen: r })
+                    if (subStep < 2) setSubStep(subStep + 1)
+                    else nextStep()
+                  }}
+                  className="py-4 border-2 border-slate-200 rounded-2xl hover:border-[var(--color-btn)] font-bold"
                 >
-                  {dir === "arriba" && "↑"}
-                  {dir === "abajo" && "↓"}
-                  {dir === "izquierda" && "←"}
-                  {dir === "derecha" && "→"}
+                  {dir}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {stage === "feedback" && (
-          <div ref={feedbackRef} className="relative overflow-hidden rounded-2xl border border-[var(--color-text-muted)]/20 bg-[var(--color-bg-secondary)] px-12 py-10 text-center">
-            <div
-              className="feedback-scan absolute inset-0 origin-top opacity-20"
-              style={{ transform: "scaleY(0)", backgroundColor: "var(--color-btn)" }}
-            />
-            <div className="feedback-glitch relative">
-              <p
-                className="text-xl font-bold"
-                style={{ color: feedbackCorrect ? "var(--color-btn)" : "#dc2626" }}
-              >
-                {feedbackCorrect
-                  ? mockData.visionLab.feedback.correct
-                  : mockData.visionLab.feedback.incorrect}
-              </p>
-              <p className="mt-2 text-[var(--color-text-muted)]">
-                {results.correct} / {results.total} aciertos
-              </p>
-              <button
-                type="button"
-                onClick={nextRound}
-                className="mt-6 rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                style={{ backgroundColor: "var(--color-btn)" }}
-                data-cursor-magnetic
-              >
-                {round >= TOTAL_ROUNDS ? "Ver resultado final" : "Siguiente"}
-              </button>
+        {/* 2. TEST BICROMÁTICO */}
+        {step === 1 && (
+          <div className="p-10 text-center">
+            <span className="text-blue-600 font-black text-xs uppercase tracking-widest">
+              Test Duocromo
+            </span>
+            <div>
+              <img
+                src="https://www.kiversal.com/web/image/1476-4f14bf59/Dise%C3%B1o%20sin%20t%C3%ADtulo%20%2844%29.png"
+                alt="test duocromo"
+                className="w-2/3 mx-auto"
+              />
             </div>
+            <p className="mb-8 font-medium">
+              ¿En qué fondo ves las letras más definidas?
+            </p>
+            <div className="grid grid-cols-1 gap-4">
+              {['Rojo', 'Verde', 'Ambos iguales'].map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => {
+                    setRespuestas({ ...respuestas, duocromo: opt })
+                    nextStep()
+                  }}
+                  className="py-4 border-2 border-slate-200 rounded-2xl font-bold hover:border-[var(--color-btn)]"
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 3. TEST DE ASTIGMATISMO */}
+        {step === 2 && (
+          <div className="p-10 text-center">
+            <span className="text-[var(--color-title)] font-black text-xs uppercase tracking-widest">
+              Círculo Horario
+            </span>
+            <div className="my-8 flex justify-center">
+              <img
+                src="https://cupones.optica2000.com/bloomreach-iframes/tests/visual/es/img/test-ast.png"
+                className="h-96"
+                alt="Astigmatismo"
+              />
+            </div>
+            <p className="mb-8 font-medium text-sm">
+              ¿Ves algunas líneas más oscuras que otras?
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              {['Sí', 'No'].map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => {
+                    setRespuestas({ ...respuestas, astigmatismo: opt })
+                    nextStep()
+                  }}
+                  className="py-4 border-2 border-slate-200 rounded-2xl font-bold hover:border-[var(--color-btn)]"
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 4. TEST DE ISHIHARA (4 EJERCICIOS) */}
+        {step === 3 && (
+          <div className="p-10 text-center">
+            <span className="text-[var(--color-title)] font-black text-xs uppercase tracking-widest">
+              Test de Ishihara ({subStep + 1}/4)
+            </span>
+            <div className="my-8 flex justify-center">
+              <img
+                src={ISHIHARA_STEPS[subStep].img}
+                className="h-48 rounded-full border-4 border-slate-200"
+                alt="Ishihara"
+              />
+            </div>
+            <p className="mb-8 font-medium text-sm">¿Qué número ves?</p>
+            <div className="grid grid-cols-2 gap-4">
+              {(ishiharaOpciones.length === 4
+                ? ishiharaOpciones
+                : [ISHIHARA_STEPS[subStep].correct, 'No veo nada', '42', '5']
+              ).map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => {
+                    const r = [...respuestas.ishihara, opt]
+                    setRespuestas({ ...respuestas, ishihara: r })
+                    if (subStep < 3) {
+                      setIshiharaOpciones(
+                        buildIshiharaOpciones(
+                          ISHIHARA_STEPS[subStep + 1].correct,
+                        ),
+                      )
+                      setSubStep(subStep + 1)
+                    } else nextStep()
+                  }}
+                  className="py-3 border-2 border-slate-200 rounded-xl font-bold hover:border-[var(--color-btn)]"
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* RESULTADOS FINALES */}
+        {step === 4 && (
+          <div className="p-12 border-t-[12px] border-[var(--color-btn)]">
+            <h3 className="text-3xl font-black mb-6">Informe de Resultados</h3>
+            <div className="space-y-4 mb-10">
+              {renderInforme().map((h, i) => (
+                <div
+                  key={i}
+                  className="p-4 bg-blue-50 border-l-4 border-[var(--color-btn)] rounded-r-xl flex items-start gap-3"
+                >
+                  <span className="text-[var(--color-btn)] mt-1">●</span>
+                  <p className="text-sm font-semibold text-[var(--color-text)]">
+                    {h}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="bg-[var(--color-title)] p-6 rounded-3xl text-white mb-8">
+              <p className="text-xs opacity-70 leading-relaxed italic">
+                *Este es un tamizaje digital. se recomienda una evaluación
+                clínica completa para confirmar estos hallazgos.*
+              </p>
+            </div>
+            <button
+              onClick={() => (window.location.href = '#contacto')}
+              className="w-full bg-[var(--color-btn)] py-5 rounded-2xl text-white font-black hover:bg-[var(--color-btn-hover)] transition-all shadow-xl shadow-[var(--color-btn)] uppercase tracking-widest"
+            >
+              Agendar con Especialista
+            </button>
+            <button
+              onClick={() => setStep(-1)}
+              className="w-full py-5 rounded-2xl text-[var(--color-text)] font-black hover:text-[var(--color-btn)] transition-all"
+            >
+              Volver al inicio
+            </button>
           </div>
         )}
       </div>
     </section>
-  );
+  )
 }

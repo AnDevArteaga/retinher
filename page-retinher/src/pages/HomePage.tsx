@@ -39,15 +39,15 @@ export function HomePage() {
   return (
     <div ref={wrapperRef} className="relative">
       <Hero />
-      <SectionDoctor />
       <SectionReconocimientos />
       <SectionUCAD />
       <SectionServicios />
-      <SectionAbout />
-      <SectionQueRevisamos />
-      <GalleryHorizontal />
-      <SectionImagenes />
+      <SectionDoctor />
       <VisionTest />
+      <SectionAbout />
+      <GalleryHorizontal />
+      <SectionQueRevisamos />
+      {/* <SectionImagenes /> */}
     </div>
   )
 }

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { mockData } from '../../data/MockData'
+import { useContent } from '../../contexts/ContentContext'
 import { Button } from '../ui/button'
 
-const { titulo, subtitulo, sellos } = mockData.sellosImpacto
-
 export function SectionReconocimientos() {
+  const { data } = useContent()
+  const sellosImpacto = (data as { sellosImpacto?: { titulo: string; subtitulo: string; sellos: Array<{ id: string; titulo: string; logo: string; descripcion: string; porQue?: string; queHicieron?: unknown[]; stats?: unknown[]; tags?: string[]; color: string }> } })?.sellosImpacto
+  if (!sellosImpacto) return null
+  const { titulo, subtitulo, sellos } = sellosImpacto
   const [isOpen, setIsOpen] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
   const overlayRef = useRef<HTMLDivElement>(null)
@@ -158,7 +160,7 @@ export function SectionReconocimientos() {
                       />
                     </div>
                     <div className="animate-up mt-4 sm:mt-6 md:mt-8 grid grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-                      {sello.stats.map((s, idx) => (
+                      {((sello.stats ?? []) as Array<{ valor: string; unidad: string; label: string }>).map((s, idx) => (
                         <div key={idx}>
                           <div className="text-2xl sm:text-3xl md:text-4xl font-black">
                             {s.valor}
@@ -207,8 +209,8 @@ export function SectionReconocimientos() {
                             Qué hicimos
                           </h4>
                           <ul className="space-y-3">
-                            {sello.queHicieron.map(
-                              (item: string, idx: number) => (
+                            {(sello.queHicieron ?? []).map(
+                              (item: unknown, idx: number) => (
                                 <li
                                   key={idx}
                                   className="flex gap-3 items-start"
@@ -218,7 +220,7 @@ export function SectionReconocimientos() {
                                     style={{ backgroundColor: sello.color }}
                                   />
                                   <span className="text-slate-600 font-light leading-relaxed">
-                                    {item}
+                                    {String(item)}
                                   </span>
                                 </li>
                               ),
@@ -228,7 +230,7 @@ export function SectionReconocimientos() {
                       )}
 
                     <div className="flex flex-wrap gap-2 pt-2">
-                      {sello.tags.map((t) => (
+                      {(sello.tags ?? []).map((t: string) => (
                         <span
                           key={t}
                           className="px-4 py-1 rounded-full border border-slate-200 text-[10px] font-bold uppercase text-slate-400"

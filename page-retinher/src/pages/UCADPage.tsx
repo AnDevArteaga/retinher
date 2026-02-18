@@ -33,9 +33,29 @@ export function UCADPage() {
   const metasCardsRef = useRef<HTMLDivElement[]>([])
   const valoresRef = useRef<HTMLDivElement[]>([])
   const riesgoCardsRef = useRef<HTMLDivElement[]>([])
+  const presentacionRef = useRef<HTMLElement>(null)
   const infographicRef = useRef<HTMLElement>(null)
+  const retinaEtapasRef = useRef<HTMLElement>(null)
+  const visionPacienteRef = useRef<HTMLElement>(null)
   const galleryRef = useRef<HTMLElement>(null)
   const galleryTrackRef = useRef<HTMLDivElement>(null)
+
+  // Imágenes de fondo de ojo por etapa (colocar en public/ucad/ o sustituir por URLs)
+  const RETINA_ETAPAS = [
+    { id: 'normal', label: 'Retina normal', src: '/normal.jpeg' },
+    { id: 'leve', label: 'Retinopatía Diabética Leve', src: '/leve.jpeg' },
+    {
+      id: 'npdr-moderada',
+      label: 'Retinopatía Diabética no Proliferativa Moderada',
+      src: '/moderada.jpeg',
+    },
+    {
+      id: 'npdr-severa',
+      label: 'Retinopatía Diabética no Proliferativa Severa',
+      src: '/severa.jpeg',
+    },
+  ]
+  const VISION_PACIENTE_SRC = '/comove.jpeg'
 
   const UCAD_IMAGES = [
     {
@@ -76,6 +96,8 @@ export function UCADPage() {
   ]
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>
+    const refreshSt = () => ScrollTrigger.refresh()
     const ctx = gsap.context(() => {
       if (heroRef.current) {
         const title = heroRef.current.querySelector('.ucad-hero-title')
@@ -159,6 +181,52 @@ export function UCADPage() {
           }),
       })
 
+      const presentacionEls =
+        presentacionRef.current?.querySelectorAll('.ucad-animate') || []
+      ScrollTrigger.batch(presentacionEls, {
+        start: 'top 85%',
+        onEnter: (batch) =>
+          gsap.to(batch, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.08,
+            ease: 'power2.out',
+          }),
+      })
+      gsap.set(presentacionEls, { opacity: 0, y: 24 })
+
+      const retinaEls =
+        retinaEtapasRef.current?.querySelectorAll('.ucad-animate') || []
+      gsap.set(retinaEls, { opacity: 0, y: 20 })
+      ScrollTrigger.batch(retinaEls, {
+        start: 'top 82%',
+        onEnter: (batch) =>
+          gsap.to(batch, {
+            opacity: 1,
+            y: 0,
+            duration: 0.75,
+            stagger: 0.1,
+            ease: 'power2.out',
+          }),
+      })
+
+      const visionEl = visionPacienteRef.current?.querySelector('.ucad-animate')
+      if (visionEl) {
+        gsap.set(visionEl, { opacity: 0, y: 30 })
+        ScrollTrigger.create({
+          trigger: visionPacienteRef.current,
+          start: 'top 80%',
+          onEnter: () =>
+            gsap.to(visionEl, {
+              opacity: 1,
+              y: 0,
+              duration: 0.9,
+              ease: 'power2.out',
+            }),
+        })
+      }
+
       const infographicLeft =
         infographicRef.current?.querySelector('.infographic-left')
       const infographicRight =
@@ -187,6 +255,7 @@ export function UCADPage() {
         })
       }
 
+      // Animación galería: al llegar a la sección se fija y el scroll mueve el carril horizontal
       const gallerySection = galleryRef.current
       const galleryTrack = galleryTrackRef.current
       if (gallerySection && galleryTrack) {
@@ -206,8 +275,15 @@ export function UCADPage() {
           })
         }
       }
+      refreshSt()
+      window.addEventListener('load', refreshSt)
+      timeoutId = setTimeout(refreshSt, 400)
     })
-    return () => ctx.revert()
+    return () => {
+      ctx.revert()
+      window.removeEventListener('load', refreshSt)
+      clearTimeout(timeoutId)
+    }
   }, [])
 
   return (
@@ -300,7 +376,142 @@ export function UCADPage() {
         </div>
       </section>
 
-      {/* 2. INFOGRAFÍA — izquierda: texto | derecha: infografía */}
+      {/* 2. PRESENTACIÓN — Diabetes, Retina, Retinopatía Diabética */}
+      <section
+        ref={presentacionRef}
+        className="relative px-6 py-20 md:px-12 md:py-28"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <div className="mx-auto max-w-4xl">
+          <h2
+            className="ucad-animate mb-12 text-3xl font-bold tracking-tight md:text-4xl"
+            style={{ color: UCAD_COLORS.azulProfundo }}
+          >
+            Contexto: Diabetes, Retina y Retinopatía Diabética
+          </h2>
+
+          <div className="space-y-6 text-slate-700 leading-relaxed md:text-lg">
+            <p className="ucad-animate">
+              La diabetes es una enfermedad enigmática, complicada y progresiva
+              que afecta a los vasos sanguíneos y ocasiona importantes
+              trastornos en los ojos. La <strong>retina</strong> es una fina
+              capa de células nerviosas que recubre la parte interna del ojo y
+              es responsable de la formación de la imagen. La{' '}
+              <strong>mácula</strong> es la parte central y más sensible de la
+              retina; proporciona la visión central, nítida y detallada en
+              colores.
+            </p>
+            <p className="ucad-animate">
+              La <strong>retinopatía diabética</strong> es una complicación de
+              la diabetes no controlada. Ocasiona deterioro de los vasos
+              sanguíneos de la retina y puede afectar seriamente la visión. Al
+              principio la visión no se encuentra afectada, por eso es
+              indispensable realizar un examen de fondo de ojo periódico para
+              detectar trastornos retinianos y recibir tratamiento oportuno que
+              impida que la visión se deteriore y se pierda irremediablemente.
+            </p>
+            <p className="ucad-animate">
+              La retinopatía diabética es la{' '}
+              <strong>
+                mayor causa de ceguera prevenible en adultos en edad productiva
+              </strong>
+              . Se estima que más de 93 millones de personas tienen retinopatía
+              diabética y que ese número se duplicará hacia 2030, cuando
+              existirán alrededor de 366 millones de personas diabéticas en el
+              mundo y casi la mitad tendrán algún grado de retinopatía
+              diabética.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. RETINA: IMÁGENES POR ETAPA */}
+      <section
+        ref={retinaEtapasRef}
+        className="relative px-6 py-20 md:px-12 md:py-28"
+        style={{ backgroundColor: UCAD_COLORS.grisTecnico }}
+      >
+        <div className="mx-auto max-w-6xl">
+          <h2
+            className="ucad-animate mb-4 text-3xl font-bold tracking-tight md:text-4xl"
+            style={{ color: UCAD_COLORS.azulProfundo }}
+          >
+            Retina: etapas de la retinopatía diabética
+          </h2>
+          <p className="ucad-animate mb-12 text-slate-600 md:text-lg">
+            Fondos de ojo según la clasificación
+          </p>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {RETINA_ETAPAS.map((item) => (
+              <div
+                key={item.id}
+                className="ucad-animate overflow-hidden rounded-2xl border-2 bg-white shadow-lg transition-shadow hover:shadow-xl"
+                style={{ borderColor: UCAD_COLORS.azulUCAD }}
+              >
+                <div className="aspect-[4/3] bg-slate-100">
+                  <img
+                    src={item.src}
+                    alt={item.label}
+                    className="h-full w-full object-cover object-center"
+                    onError={(e) => {
+                      const target = e.currentTarget
+                      target.style.background =
+                        'linear-gradient(135deg,#e2e8f0 0%,#cbd5e1 100%)'
+                      target.alt = item.label
+                    }}
+                  />
+                </div>
+                <div className="border-t border-slate-100 px-4 py-3">
+                  <p
+                    className="text-center text-sm font-semibold leading-snug md:text-base"
+                    style={{ color: UCAD_COLORS.azulProfundo }}
+                  >
+                    {item.label}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. CÓMO VE EL PACIENTE EN CADA ETAPA */}
+      <section
+        ref={visionPacienteRef}
+        className="relative px-6 py-20 md:px-12 md:py-28"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <div className="mx-auto max-w-5xl">
+          <h2
+            className="mb-4 text-3xl font-bold tracking-tight md:text-4xl"
+            style={{ color: UCAD_COLORS.azulProfundo }}
+          >
+            Cómo ve el paciente en cada etapa
+          </h2>
+          <p className="mb-12 text-slate-600 md:text-lg">
+            Simulación de la visión según el grado de afectación
+          </p>
+          <div
+            className="ucad-animate overflow-hidden rounded-2xl border-2 shadow-xl"
+            style={{ borderColor: UCAD_COLORS.azulUCAD }}
+          >
+            <img
+              src={VISION_PACIENTE_SRC}
+              alt="Diseño que muestra cómo ve el paciente en cada etapa de la retinopatía diabética"
+              className="h-auto w-full object-contain"
+              onError={(e) => {
+                const target = e.currentTarget
+                target.style.background =
+                  'linear-gradient(135deg,#f4f7f9 0%,#e2e8f0 100%)'
+                target.alt = 'Cómo ve el paciente en cada etapa'
+              }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 5. INFOGRAFÍA — izquierda: texto | derecha: infografía */}
       <section
         ref={infographicRef}
         className="relative px-8 py-24 md:py-32"
@@ -334,7 +545,7 @@ export function UCADPage() {
         </div>
       </section>
 
-      {/* 3. GALERÍA DE IMÁGENES */}
+      {/* 6. GALERÍA DE IMÁGENES — pin + scrub al llegar aquí */}
       <section
         ref={galleryRef}
         className="relative h-screen overflow-hidden"
@@ -373,7 +584,7 @@ export function UCADPage() {
         </div>
       </section>
 
-      {/* 4. PLATAFORMA ESTRATÉGICA */}
+      {/* 7. PLATAFORMA ESTRATÉGICA */}
       <section
         ref={platformRef}
         className="relative px-8 py-32"

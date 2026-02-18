@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { mockData } from '../../data/MockData'
+import { useContent } from '../../contexts/ContentContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export function SectionServicios() {
+  const { data } = useContent()
+  const services = (data as { services?: Array<{ id: string; title: string; description: string; cta: string; image: string }> })?.services ?? []
   const sectionRef = useRef<HTMLElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
 
@@ -112,7 +114,7 @@ export function SectionServicios() {
 
         {/* MOBILE: Cards en fila vertical (una arriba de otra) */}
         <div className="flex flex-col gap-8 sm:gap-10 md:hidden w-full max-w-2xl mx-auto px-4">
-          {mockData.services.map((s, i) => (
+          {services.map((s, i) => (
             <article
               key={s.id}
               className="flex flex-col gap-4 sm:gap-6 rounded-2xl overflow-hidden bg-white shadow-lg border border-slate-100"
@@ -148,7 +150,7 @@ export function SectionServicios() {
 
         {/* DESKTOP: Contenedor con animación pin/scroll */}
         <div className="hidden md:block relative min-h-[50vh] sm:min-h-[60vh] md:h-[70vh] w-full max-w-7xl">
-          {mockData.services.map((s, i) => (
+          {services.map((s, i) => (
             <article
               key={s.id}
               className="service-card-desktop absolute inset-0 flex items-center justify-center px-4 sm:px-6"

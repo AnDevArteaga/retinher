@@ -2,12 +2,18 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { RevealText } from '../shared/RevealText'
-import { mockData } from '../../data/MockData'
+import { useContent } from '../../contexts/ContentContext'
 import { Button } from '../ui/button'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export function SectionAbout() {
+  const { data } = useContent()
+  const about = (
+    data as {
+      about?: { title: string; intro: string; purpose: string; ctaPdf: string }
+    }
+  )?.about
   const sectionRef = useRef<HTMLElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const textContentRef = useRef<HTMLDivElement>(null)
@@ -51,6 +57,8 @@ export function SectionAbout() {
     return () => ctx.revert()
   }, [])
 
+  if (!about) return null
+
   return (
     <section
       ref={sectionRef}
@@ -79,7 +87,7 @@ export function SectionAbout() {
               }}
             >
               <RevealText
-                text={mockData.about.title}
+                text={about.title}
                 splitBy="words"
                 skipAutoAnimate
                 className="inline"
@@ -87,24 +95,27 @@ export function SectionAbout() {
             </h2>
           </div>
 
-          <div ref={textContentRef} className="space-y-8 sm:space-y-10 md:space-y-12">
+          <div
+            ref={textContentRef}
+            className="space-y-8 sm:space-y-10 md:space-y-12"
+          >
             <div className="space-y-6 sm:space-y-8">
               <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white/60 font-light">
-                <span
-                  dangerouslySetInnerHTML={{ __html: mockData.about.intro }}
-                />
+                <span dangerouslySetInnerHTML={{ __html: about.intro }} />
               </p>
               <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white/60 font-light">
-                <span
-                  dangerouslySetInnerHTML={{ __html: mockData.about.purpose }}
-                />
+                <span dangerouslySetInnerHTML={{ __html: about.purpose }} />
               </p>
             </div>
 
             <div className="pt-4">
-              <Button>
+              <Button
+                onClick={() =>
+                  window.open('public/portafolio-de-servicios.pdf', '_blank')
+                }
+              >
                 <span className="relative z-10 flex items-center gap-3 group-hover:text-white">
-                  {mockData.about.ctaPdf}
+                  {about.ctaPdf}
                   <svg
                     width="18"
                     height="18"

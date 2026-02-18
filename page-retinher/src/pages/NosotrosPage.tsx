@@ -1,23 +1,9 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { mockData } from '../data/MockData'
+import { useContent } from '../contexts/ContentContext'
 
 gsap.registerPlugin(ScrollTrigger)
-
-const {
-  heroImage,
-  title,
-  intro,
-  mision,
-  vision,
-  valores,
-  politicaCalidad,
-  politicaSeguridad,
-  serviceGroups,
-} = mockData.nosotros
-
-const ecosistemaImpacto = mockData.ecosistemaImpacto
 
 const BENTO_CLASSES: Record<string, string> = {
   'red-hospitales-verdes': 'md:col-span-2',
@@ -77,6 +63,9 @@ function highlightText(
 }
 
 export function NosotrosPage() {
+  const { data } = useContent()
+  const nosotros = (data as { nosotros?: { heroImage: string; title: string; intro: string; mision: string; vision: string; valores: Array<{ left: string; right: string }>; politicaCalidad: string[]; politicaSeguridad: string[]; serviceGroups: Array<{ id: string; title: string; items: string[] }> } })?.nosotros
+  const ecosistemaImpacto = (data as { ecosistemaImpacto?: { tituloSeccion: string; subtituloSeccion: string; bloques: Array<{ id: string; titulo: string; sello: string; parrafos: string[]; highlights: string[] }> } })?.ecosistemaImpacto
   const missionRef = useRef<HTMLDivElement>(null)
   const visionRef = useRef<HTMLDivElement>(null)
   const impactoSectionRef = useRef<HTMLElement>(null)
@@ -165,6 +154,9 @@ export function NosotrosPage() {
     })
     return () => ctx.revert()
   }, [])
+
+  if (!nosotros || !ecosistemaImpacto) return null
+  const { heroImage, title, intro, mision, vision, valores, politicaCalidad, politicaSeguridad, serviceGroups } = nosotros
 
   return (
     <div className="nosotros-page min-h-screen bg-white">

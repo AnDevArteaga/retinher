@@ -1,11 +1,13 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { mockData } from "../../data/MockData";
+import { useContent } from "../../contexts/ContentContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export function SectionImagenes() {
+  const { data } = useContent();
+  const imageSection = (data as { imageSection?: { title: string; subtitle: string; images: Array<{ id: string; src: string; alt: string }> } })?.imageSection;
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -50,7 +52,8 @@ export function SectionImagenes() {
     return () => ctx.revert();
   }, []);
 
-  const { title, subtitle, images } = mockData.imageSection;
+  if (!imageSection) return null;
+  const { title, subtitle, images } = imageSection;
 
   return (
     <section ref={sectionRef} className="section bg-[var(--color-bg-primary)]" id="imagenes">

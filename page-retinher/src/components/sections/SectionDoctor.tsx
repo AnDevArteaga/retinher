@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { mockData } from '../../data/MockData'
+import { useContent } from '../../contexts/ContentContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const { nombre, titulo, descripcion, imagen } = mockData.doctor
-
 export function SectionDoctor() {
+  const { data } = useContent()
+  const doctor = (data as { doctor?: { nombre: string; titulo: string; descripcion: string; imagen: string } })?.doctor
   const sectionRef = useRef<HTMLElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -61,6 +61,9 @@ export function SectionDoctor() {
 
     return () => ctx.revert()
   }, [])
+
+  if (!doctor) return null
+  const { nombre, titulo, descripcion, imagen } = doctor
 
   return (
     <section

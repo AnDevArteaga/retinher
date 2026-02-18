@@ -1,7 +1,9 @@
-import { mockData } from "../../data/MockData";
+import { useContent } from "../../contexts/ContentContext";
 
 export function Footer() {
-  const f = mockData.footer;
+  const { data } = useContent();
+  const f = (data as { footer?: { sede1: string; sede2: string; pbx: string; email: string; city: string; copyright: string; privacy: string } })?.footer;
+  if (!f) return null;
 
   return (
     <footer className="border-t border-[var(--color-text-muted)]/20 bg-[var(--color-bg-primary)]">

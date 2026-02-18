@@ -2,15 +2,33 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { MapPin, Clock, Phone, Mail } from 'lucide-react'
-import { mockData } from '../data/MockData'
+import { useContent } from '../contexts/ContentContext'
 import { UbicacionMapa } from '../components/shared/UbicacionMapa'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const { sedes, footer } = mockData
-const sede = sedes.sedePrincipal
+type SedeItem = {
+  id: string
+  nombre: string
+  direccion: string
+  barrio: string
+  ciudad: string
+  horario: string
+  mapaEmbedUrl: string
+}
 
 export function SedesPage() {
+  const { data } = useContent()
+  const sedesData = (
+    data as {
+      sedes?: {
+        titulo: string
+        subtitulo: string
+        sedes: SedeItem[]
+      }
+    }
+  )?.sedes
+  const footer = (data as { footer?: { pbx: string; email: string } })?.footer
   const heroRef = useRef<HTMLElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
 
@@ -22,7 +40,7 @@ export function SedesPage() {
         gsap.fromTo(
           [title, subtitle],
           { opacity: 0, y: 50 },
-          { opacity: 1, y: 0, duration: 1, stagger: 0.2, ease: 'power2.out' }
+          { opacity: 1, y: 0, duration: 1, stagger: 0.2, ease: 'power2.out' },
         )
       }
 
@@ -45,14 +63,21 @@ export function SedesPage() {
     return () => ctx.revert()
   }, [])
 
+  if (!sedesData || !footer) return null
+  const sedesList = sedesData.sedes ?? []
+  if (sedesList.length === 0) return null
+
   return (
     <div className="sedes-page min-h-screen bg-white">
       {/* Hero */}
       <section
         ref={heroRef}
-        className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden px-8 py-32"
+        className="px-8 py-32"
         style={{
-          background: `linear-gradient(135deg, #003366 0%, #0056b3 100%)`,
+          backgroundImage: `url('/sedes.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       >
         <div className="absolute inset-0 opacity-10">
@@ -69,44 +94,83 @@ export function SedesPage() {
               <MapPin className="h-10 w-10 text-white" strokeWidth={1.5} />
             </div>
           </div>
-          <h1 className="sedes-hero-title text-5xl md:text-7xl font-bold tracking-tighter text-white">
-            {sedes.titulo}
+          <h1
+            className="sedes-hero-title text-5xl md:text-7xl font-bold tracking-tighter text-white"
+            style={{
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            {sedesData.titulo}
           </h1>
-          <p className="sedes-hero-subtitle mt-6 text-xl text-white/90">
-            {sedes.subtitulo}
+          <p
+            className="sedes-hero-subtitle mt-6 text-xl text-white/90"
+            style={{
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            {sedesData.subtitulo}
           </p>
         </div>
       </section>
 
-      {/* Cards de contacto */}
-      <section className="relative px-8 py-20" style={{ backgroundColor: '#f4f7f9' }}>
-        <div ref={cardsRef} className="mx-auto grid max-w-5xl gap-6 md:grid-cols-3">
-          <div className="sedes-card flex flex-col rounded-3xl border-2 bg-white p-8 shadow-sm transition-all hover:shadow-xl" style={{ borderColor: '#0056b3' }}>
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(0, 86, 179, 0.1)' }}>
-              <MapPin className="h-7 w-7" style={{ color: '#0056b3' }} strokeWidth={1.5} />
+      {/* Cards: una por sede (dirección + horario) y una de contacto */}
+      <section
+        className="relative px-8 py-20"
+        style={{ backgroundColor: '#f4f7f9' }}
+      >
+        <div
+          ref={cardsRef}
+          className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {sedesList.map((sede) => (
+            <div
+              key={sede.id}
+              className="sedes-card flex flex-col rounded-3xl border-2 bg-white p-8 shadow-sm transition-all hover:shadow-xl"
+              style={{ borderColor: '#0056b3' }}
+            >
+              <div
+                className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl"
+                style={{ backgroundColor: 'rgba(0, 86, 179, 0.1)' }}
+              >
+                <MapPin
+                  className="h-7 w-7"
+                  style={{ color: '#0056b3' }}
+                  strokeWidth={1.5}
+                />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">{sede.nombre}</h3>
+              <p className="mt-2 text-slate-600">{sede.direccion}</p>
+              <p className="text-slate-600">{sede.barrio}</p>
+              <p className="text-slate-600">{sede.ciudad}</p>
+              <div className="mt-4 flex items-start gap-2 text-slate-600">
+                <Clock className="h-4 w-4 mt-0.5 shrink-0" style={{ color: '#0056b3' }} strokeWidth={1.5} />
+                <span className="whitespace-pre-line text-sm">{sede.horario}</span>
+              </div>
             </div>
-            <h3 className="text-lg font-bold text-slate-900">Dirección</h3>
-            <p className="mt-2 text-slate-600">{sede.direccion}</p>
-            <p className="text-slate-600">{sede.barrio}</p>
-            <p className="text-slate-600">{sede.ciudad}</p>
-          </div>
+          ))}
 
-          <div className="sedes-card flex flex-col rounded-3xl border-2 bg-white p-8 shadow-sm transition-all hover:shadow-xl" style={{ borderColor: '#0056b3' }}>
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(0, 86, 179, 0.1)' }}>
-              <Clock className="h-7 w-7" style={{ color: '#0056b3' }} strokeWidth={1.5} />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900">Horario</h3>
-            <p className="mt-2 text-slate-600">Lun - Vie</p>
-            <p className="text-slate-500 text-sm">Horarios de atención</p>
-          </div>
-
-          <div className="sedes-card flex flex-col rounded-3xl border-2 bg-white p-8 shadow-sm transition-all hover:shadow-xl" style={{ borderColor: '#0056b3' }}>
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: 'rgba(0, 86, 179, 0.1)' }}>
-              <Phone className="h-7 w-7" style={{ color: '#0056b3' }} strokeWidth={1.5} />
+          <div
+            className="sedes-card flex flex-col rounded-3xl border-2 bg-white p-8 shadow-sm transition-all hover:shadow-xl"
+            style={{ borderColor: '#0056b3' }}
+          >
+            <div
+              className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl"
+              style={{ backgroundColor: 'rgba(0, 86, 179, 0.1)' }}
+            >
+              <Phone
+                className="h-7 w-7"
+                style={{ color: '#0056b3' }}
+                strokeWidth={1.5}
+              />
             </div>
             <h3 className="text-lg font-bold text-slate-900">Contacto</h3>
             <p className="mt-2 text-slate-600">{footer.pbx}</p>
-            <a href={`mailto:${footer.email}`} className="mt-2 flex items-center gap-2 text-slate-600 hover:text-[var(--color-btn)]">
+            <a
+              href={`mailto:${footer.email}`}
+              className="mt-2 flex items-center gap-2 text-slate-600 hover:text-[var(--color-btn)]"
+            >
               <Mail className="h-4 w-4" />
               {footer.email}
             </a>
@@ -114,7 +178,7 @@ export function SedesPage() {
         </div>
       </section>
 
-      {/* Mapa */}
+      {/* Mapas (uno por sede) */}
       <UbicacionMapa />
     </div>
   )

@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { mockData } from '../../data/MockData'
+import { useContent } from '../../contexts/ContentContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export function SectionQueRevisamos() {
+  const { data } = useContent()
+  const queRevisamos = (data as { queRevisamos?: { title: string; text: string } })?.queRevisamos
   const sectionRef = useRef<HTMLElement>(null)
   const glassesRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -71,7 +73,8 @@ export function SectionQueRevisamos() {
     return () => ctx.revert()
   }, [])
 
-  const { title, text } = mockData.queRevisamos
+  if (!queRevisamos) return null
+  const { title, text } = queRevisamos
 
   return (
     <section ref={sectionRef} className="relative bg-white overflow-hidden">
