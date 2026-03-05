@@ -14,16 +14,48 @@ import {
   Activity,
   MapPin,
   AlertTriangle,
-  Building2,
+  // Building2,
   Search,
-  Calendar,
+  // Calendar,
 } from 'lucide-react'
+import { useContent } from '../contexts/ContentContext'
 import { UCAD_COLORS } from '../constants/UCAD'
-import { Button } from '../components/ui/button'
+// import { Button } from '../components/ui/button'
+
+const ICON_MAP = { Users, TrendingUp, Activity, Zap, Award, Heart, Target } as const
+const COLOR_MAP: Record<string, string> = { verdeReti: UCAD_COLORS.verdeReti, azulUCAD: UCAD_COLORS.azulUCAD, rojoAlerta: UCAD_COLORS.rojoAlerta }
 
 gsap.registerPlugin(ScrollTrigger)
 
+const FALLBACK_GALLERY = [
+  { id: 'g1', src: '/1.jpeg', alt: 'UCAD Te Veo y Te Ves' },
+  { id: 'g2', src: '/2.jpeg', alt: 'UCAD Te Veo y Te Ves' },
+  { id: 'g3', src: '/3.jpeg', alt: 'UCAD Te Veo y Te Ves' },
+  { id: 'g4', src: '/4.jpeg', alt: 'UCAD Te Veo y Te Ves' },
+  { id: 'g5', src: '/5.jpeg', alt: 'UCAD Te Veo y Te Ves' },
+  { id: 'g6', src: '/6.jpeg', alt: 'UCAD Te Veo y Te Ves' },
+  { id: 'g7', src: '/7.jpeg', alt: 'UCAD Te Veo y Te Ves' },
+  { id: 'g8', src: '/8.jpg', alt: 'UCAD Te Veo y Te Ves' },
+  { id: 'g9', src: '/9.jpg', alt: 'UCAD Te Veo y Te Ves' },
+]
+
 export function UCADPage() {
+  const { data } = useContent()
+  const ucadPage = (data as { ucadPage?: { tituloGaleria: string; subtituloGaleria: string; galleryItems: Array<{ id: string; src: string; alt: string }>; metas: Array<{ id: string; valor: string; label: string; descripcion: string; icon: string; color: string }> } })?.ucadPage
+
+  const galleryTitle = ucadPage?.tituloGaleria ?? 'En imágenes'
+  const gallerySubtitle = ucadPage?.subtituloGaleria ?? 'UCAD Te Veo y Te Ves en acción'
+  const UCAD_IMAGES = (ucadPage?.galleryItems?.length ? ucadPage.galleryItems : FALLBACK_GALLERY) as Array<{ id: string; src: string; alt: string }>
+  const METAS_DATA = ucadPage?.metas?.length
+    ? ucadPage.metas.map((m) => ({ ...m, icon: ICON_MAP[m.icon as keyof typeof ICON_MAP] ?? Activity, color: COLOR_MAP[m.color] ?? UCAD_COLORS.verdeReti }))
+    : [
+        { valor: '80%', label: 'Cobertura', desc: 'Tamizaje anual en población de riesgo identificada', icon: Users, color: UCAD_COLORS.verdeReti },
+        { valor: '90%', label: 'Seguimiento', desc: 'Efectividad en la Red de Referencia Digital', icon: TrendingUp, color: UCAD_COLORS.verdeReti },
+        { valor: '80%', label: 'Estabilización', desc: 'Clínica de retinopatía a los 12 meses de manejo', icon: Activity, color: UCAD_COLORS.verdeReti },
+        { valor: '< 7 Días', label: 'Oportunidad', desc: 'Meta para remisiones de alta prioridad', icon: Zap, color: UCAD_COLORS.azulUCAD },
+        { valor: '-10%', label: 'Eficiencia', desc: 'Reducción anual en costo operativo por paciente tamizado mediante innovación', icon: TrendingUp, color: UCAD_COLORS.verdeReti },
+      ]
+
   const heroRef = useRef<HTMLElement>(null)
   const platformRef = useRef<HTMLElement>(null)
   const metasRef = useRef<HTMLElement>(null)
@@ -56,44 +88,6 @@ export function UCADPage() {
     },
   ]
   const VISION_PACIENTE_SRC = '/comove.jpeg'
-
-  const UCAD_IMAGES = [
-    {
-      id: 'g1',
-      src: '/1.jpeg',
-      alt: 'UCAD Te Veo y Te Ves',
-    },
-    {
-      id: 'g2',
-      src: '/2.jpeg',
-      alt: 'UCAD Te Veo y Te Ves',
-    },
-    {
-      id: 'g3',
-      src: '/3.jpeg',
-      alt: 'UCAD Te Veo y Te Ves',
-    },
-    {
-      id: 'g4',
-      src: '/4.jpeg',
-      alt: 'UCAD Te Veo y Te Ves',
-    },
-    {
-      id: 'g5',
-      src: '/5.jpeg',
-      alt: 'UCAD Te Veo y Te Ves',
-    },
-    {
-      id: 'g6',
-      src: '/6.jpeg',
-      alt: 'UCAD Te Veo y Te Ves',
-    },
-    {
-      id: 'g7',
-      src: '/7.jpeg',
-      alt: 'UCAD Te Veo y Te Ves',
-    },
-  ]
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>
@@ -196,20 +190,24 @@ export function UCADPage() {
       })
       gsap.set(presentacionEls, { opacity: 0, y: 24 })
 
+      // Etapas retinopatía: entrada suave al llegar a la sección (stagger en cards)
+      const retinaSection = retinaEtapasRef.current
       const retinaEls =
-        retinaEtapasRef.current?.querySelectorAll('.ucad-animate') || []
-      gsap.set(retinaEls, { opacity: 0, y: 20 })
-      ScrollTrigger.batch(retinaEls, {
-        start: 'top 82%',
-        onEnter: (batch) =>
-          gsap.to(batch, {
-            opacity: 1,
-            y: 0,
-            duration: 0.75,
-            stagger: 0.1,
-            ease: 'power2.out',
-          }),
-      })
+        retinaSection?.querySelectorAll('.retina-etapa-item') || []
+      if (retinaSection && retinaEls.length) {
+        gsap.set(retinaEls, { opacity: 0, y: 32 })
+        ScrollTrigger.batch(retinaEls, {
+          start: 'top 82%',
+          onEnter: (batch) =>
+            gsap.to(batch, {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              stagger: 0.12,
+              ease: 'power2.out',
+            }),
+        })
+      }
 
       const visionEl = visionPacienteRef.current?.querySelector('.ucad-animate')
       if (visionEl) {
@@ -293,7 +291,7 @@ export function UCADPage() {
         ref={heroRef}
         className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-24 md:px-12"
         style={{
-          background: `linear-gradient(135deg, ${UCAD_COLORS.azulProfundo} 0%, ${UCAD_COLORS.azulUCAD} 100%)`,
+          backgroundImage: `url('https://pub-80e71213da3845e29bca6894fbec4ec0.r2.dev/bg-tv.png.jpg')`,
         }}
       >
         <div className="absolute inset-0 opacity-10">
@@ -302,7 +300,7 @@ export function UCADPage() {
 
         <div className="relative z-10 mx-auto max-w-4xl">
           <div className="mb-12 flex flex-wrap items-center justify-center gap-6 md:gap-12">
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20">
                 <Building2 className="h-7 w-7 text-white" strokeWidth={1.5} />
               </div>
@@ -310,10 +308,13 @@ export function UCADPage() {
                 RETINHER S.A.S
               </span>
             </div>
-            <span className="hidden text-white/40 md:inline">|</span>
+            <span className="hidden text-white/40 md:inline">|</span> */}
             <div className="flex items-center gap-3">
-              <h1 className="ucad-hero-title text-5xl font-bold tracking-tight text-white md:text-6xl">
-                UCAD
+              <h1
+                className="ucad-hero-title text-5xl font-bold tracking-tight text-white md:text-7xl"
+                style={{ letterSpacing: '-0.02em', wordSpacing: '0.1em' }}
+              >
+                UCAD TE VEO Y VES
               </h1>
             </div>
           </div>
@@ -326,37 +327,30 @@ export function UCADPage() {
             </div>
           </div>
 
-          <div className="mb-12 text-center">
-            <p className="mb-4 text-3xl font-bold italic text-white md:text-4xl">
-              &ldquo;Te Veo y Ves&rdquo;
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-6">
-              <div className="flex items-center gap-2">
-                <Heart className="h-6 w-6 text-white/90" strokeWidth={1.5} />
-                <span className="text-lg text-white/90">Cuidado Integral</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Search className="h-6 w-6 text-white/90" strokeWidth={1.5} />
-                <span className="text-lg text-white/90">
-                  Detección Temprana
-                </span>
-              </div>
-            </div>
-          </div>
-
           <div className="mb-12 rounded-3xl border-2 border-white/20 bg-white/5 p-8 text-center backdrop-blur-sm md:p-10">
             <div className="mb-4 flex justify-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20">
                 <Target className="h-8 w-8 text-white" strokeWidth={1.5} />
               </div>
             </div>
-            <h2 className="mb-2 text-2xl font-bold text-white md:text-3xl">
-              Programa de Prevención de Ceguera
+            <h2
+              className="mb-2 text-2xl font-bold text-white md:text-3xl"
+              style={{ letterSpacing: '-0.02em', wordSpacing: '0.1em' }}
+            >
+              Programa de Prevención de Ceguera <br /> en Pacientes Diabéticos
             </h2>
-            <p className="text-lg text-white/90">en Pacientes Diabéticos</p>
           </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            <div className="flex items-center gap-2">
+              <Heart className="h-6 w-6 text-white/90" strokeWidth={1.5} />
+              <span className="text-lg text-white/90">Cuidado Integral</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Search className="h-6 w-6 text-white/90" strokeWidth={1.5} />
+              <span className="text-lg text-white/90">Detección Temprana</span>
+            </div>
+          </div>
+          {/* <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
             <div className="flex items-center gap-2">
               <span className="text-sm uppercase tracking-[0.15em] text-white/80 md:text-base">
                 Centro de Especialidades Oftalmológicas
@@ -372,7 +366,7 @@ export function UCADPage() {
                 <span className="text-sm text-white/80">Córdoba, Colombia</span>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -390,7 +384,7 @@ export function UCADPage() {
             Contexto: Diabetes, Retina y Retinopatía Diabética
           </h2>
 
-          <div className="space-y-6 text-slate-700 leading-relaxed md:text-lg">
+          <div className="space-y-6 text-slate-700 leading-relaxed md:text-lg text-justify">
             <p className="ucad-animate">
               La diabetes es una enfermedad enigmática, complicada y progresiva
               que afecta a los vasos sanguíneos y ocasiona importantes
@@ -425,7 +419,7 @@ export function UCADPage() {
         </div>
       </section>
 
-      {/* 3. RETINA: IMÁGENES POR ETAPA */}
+      {/* 3. RETINA: etapas de la retinopatía diabética */}
       <section
         ref={retinaEtapasRef}
         className="relative px-6 py-20 md:px-12 md:py-28"
@@ -433,20 +427,20 @@ export function UCADPage() {
       >
         <div className="mx-auto max-w-6xl">
           <h2
-            className="ucad-animate mb-4 text-3xl font-bold tracking-tight md:text-4xl"
+            className="retina-etapa-item mb-4 text-3xl font-bold tracking-tight md:text-4xl"
             style={{ color: UCAD_COLORS.azulProfundo }}
           >
             Retina: etapas de la retinopatía diabética
           </h2>
-          <p className="ucad-animate mb-12 text-slate-600 md:text-lg">
-            Fondos de ojo según la clasificación
+          <p className="retina-etapa-item mb-12 text-slate-600 md:text-lg text-justify">
+            Fondos de ojo según la clasificación.
           </p>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {RETINA_ETAPAS.map((item) => (
               <div
                 key={item.id}
-                className="ucad-animate overflow-hidden rounded-2xl border-2 bg-white shadow-lg transition-shadow hover:shadow-xl"
+                className="retina-etapa-item overflow-hidden rounded-2xl border-2 bg-white shadow-md transition-shadow hover:shadow-lg"
                 style={{ borderColor: UCAD_COLORS.azulUCAD }}
               >
                 <div className="aspect-[4/3] bg-slate-100">
@@ -476,6 +470,118 @@ export function UCADPage() {
         </div>
       </section>
 
+      {/* 8. CLASIFICACIÓN DEL RIESGO */}
+      <section
+        ref={clasificacionRef}
+        className="px-8 py-32"
+        style={{ backgroundColor: UCAD_COLORS.grisTecnico }}
+      >
+        <div className="mx-auto max-w-6xl">
+          <h2
+            className="mb-6 text-center text-4xl font-bold tracking-tight md:text-5xl"
+            style={{ color: UCAD_COLORS.azulProfundo }}
+          >
+            Clasificación del Riesgo
+          </h2>
+          <p className="mb-16 text-center text-slate-600">
+            Protocolos de seguimiento
+          </p>
+
+          <div className="grid gap-8 md:grid-cols-3">
+            <div
+              ref={(el) => {
+                riesgoCardsRef.current[0] = el!
+              }}
+              className="rounded-3xl border-2 p-8"
+              style={{
+                borderColor: UCAD_COLORS.verdeReti,
+                backgroundColor: 'white',
+              }}
+            >
+              <div className="mb-6 flex items-center gap-3">
+                <Activity
+                  className="h-8 w-8"
+                  style={{ color: UCAD_COLORS.verdeReti }}
+                  strokeWidth={1.5}
+                />
+                <h3
+                  className="text-xl font-bold"
+                  style={{ color: UCAD_COLORS.azulProfundo }}
+                >
+                  Riesgo Bajo/Leve
+                </h3>
+              </div>
+              <p className="text-slate-600 text-justify">
+                Control anual o cada 6-12 meses en UCAD.
+              </p>
+            </div>
+
+            <div
+              ref={(el) => {
+                riesgoCardsRef.current[1] = el!
+              }}
+              className="rounded-3xl border-2 p-8"
+              style={{
+                borderColor: UCAD_COLORS.azulUCAD,
+                backgroundColor: 'white',
+              }}
+            >
+              <div className="mb-6 flex items-center gap-3">
+                <TrendingUp
+                  className="h-8 w-8"
+                  style={{ color: UCAD_COLORS.azulUCAD }}
+                  strokeWidth={1.5}
+                />
+                <h3
+                  className="text-xl font-bold"
+                  style={{ color: UCAD_COLORS.azulProfundo }}
+                >
+                  Riesgo Moderado
+                </h3>
+              </div>
+              <p className="text-slate-600 text-justify">
+                Optimización de metas metabólicas y control semestral.
+              </p>
+            </div>
+
+            <div
+              ref={(el) => {
+                riesgoCardsRef.current[2] = el!
+              }}
+              className="rounded-3xl border-2 p-8"
+              style={{
+                borderColor: UCAD_COLORS.rojoAlerta,
+                backgroundColor: 'white',
+              }}
+            >
+              <div className="mb-6 flex items-center gap-3">
+                <AlertTriangle
+                  className="h-8 w-8"
+                  style={{ color: UCAD_COLORS.rojoAlerta }}
+                  strokeWidth={1.5}
+                />
+                <h3
+                  className="text-xl font-bold"
+                  style={{ color: UCAD_COLORS.rojoAlerta }}
+                >
+                  Alto/Muy Alto Riesgo
+                </h3>
+              </div>
+              <p className="font-medium text-slate-700 text-justify">
+                RD Severa o Proliferativa:{' '}
+                <span
+                  className="font-extrabold"
+                  style={{ color: UCAD_COLORS.rojoAlerta }}
+                >
+                  Referencia inmediata
+                </span>{' '}
+                a especialista en Retina para tratamiento láser o cirugía.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 4. CÓMO VE EL PACIENTE EN CADA ETAPA */}
       <section
         ref={visionPacienteRef}
@@ -489,7 +595,7 @@ export function UCADPage() {
           >
             Cómo ve el paciente en cada etapa
           </h2>
-          <p className="mb-12 text-slate-600 md:text-lg">
+          <p className="mb-12 text-slate-600 md:text-lg text-justify">
             Simulación de la visión según el grado de afectación
           </p>
           <div
@@ -525,10 +631,10 @@ export function UCADPage() {
             >
               Te Veo y Ves:
             </h2>
-            <p className="mb-8 text-2xl font-medium text-slate-600 md:text-3xl">
+            <p className="mb-8 text-2xl font-medium text-slate-600 md:text-3xl text-justify">
               así cuidamos tu visión
             </p>
-            <p className="text-lg text-slate-500 md:text-xl">
+            <p className="text-lg text-slate-500 md:text-xl text-justify">
               Programa de prevención de ceguera por diabetes — Córdoba
             </p>
           </div>
@@ -537,7 +643,7 @@ export function UCADPage() {
             style={{ borderColor: UCAD_COLORS.azulUCAD }}
           >
             <img
-              src="/infografia.jpg"
+              src="/infografia.jpeg"
               alt="Infografía UCAD Te Veo y Te Ves"
               className="h-auto w-full object-contain"
             />
@@ -553,10 +659,10 @@ export function UCADPage() {
       >
         <div className="absolute left-0 top-0 z-10 px-8 pt-24 md:px-12">
           <h2 className="text-4xl font-bold tracking-tighter text-white md:text-5xl">
-            En imágenes
+            {galleryTitle}
           </h2>
           <p className="mt-2 text-lg text-white/80">
-            UCAD Te Veo y Te Ves en acción
+            {gallerySubtitle}
           </p>
         </div>
         <div
@@ -619,7 +725,7 @@ export function UCADPage() {
                   Propósito
                 </h3>
               </div>
-              <p className="text-slate-600 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed text-justify">
                 Reducir la pérdida de visión irreversible en personas con
                 diabetes, centralizando el esfuerzo en el cuidado humanizado.
               </p>
@@ -645,7 +751,7 @@ export function UCADPage() {
                   Visión 2028
                 </h3>
               </div>
-              <p className="text-slate-600 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed text-justify">
                 Ser el modelo referente regional en excelencia operativa para un
                 futuro sin retinopatía diabética evitable.
               </p>
@@ -709,7 +815,7 @@ export function UCADPage() {
                   Alineación
                 </h3>
               </div>
-              <p className="text-slate-600 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed text-justify">
                 Articulado con el Modelo MAITE y estándares de acreditación
                 REDER.
               </p>
@@ -730,45 +836,9 @@ export function UCADPage() {
           <p className="mb-16 text-center text-slate-600">2025-2026</p>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                valor: '80%',
-                label: 'Cobertura',
-                desc: 'Tamizaje anual en población de riesgo identificada',
-                icon: Users,
-                color: UCAD_COLORS.verdeReti,
-              },
-              {
-                valor: '90%',
-                label: 'Seguimiento',
-                desc: 'Efectividad en la Red de Referencia Digital',
-                icon: TrendingUp,
-                color: UCAD_COLORS.verdeReti,
-              },
-              {
-                valor: '80%',
-                label: 'Estabilización',
-                desc: 'Clínica de retinopatía a los 12 meses de manejo',
-                icon: Activity,
-                color: UCAD_COLORS.verdeReti,
-              },
-              {
-                valor: '< 7 Días',
-                label: 'Oportunidad',
-                desc: 'Meta para remisiones de alta prioridad',
-                icon: Zap,
-                color: UCAD_COLORS.azulUCAD,
-              },
-              {
-                valor: '-10%',
-                label: 'Eficiencia',
-                desc: 'Reducción anual en costo operativo por paciente tamizado mediante innovación',
-                icon: TrendingUp,
-                color: UCAD_COLORS.verdeReti,
-              },
-            ].map((meta, i) => (
+            {METAS_DATA.map((meta, i) => (
               <div
-                key={meta.label}
+                key={meta.id ?? meta.label}
                 ref={(el) => {
                   metasCardsRef.current[i] = el!
                 }}
@@ -794,7 +864,7 @@ export function UCADPage() {
                 <h3 className="text-lg font-bold text-slate-800">
                   {meta.label}
                 </h3>
-                <p className="mt-2 text-slate-600">{meta.desc}</p>
+                <p className="mt-2 text-slate-600 text-justify">{meta.desc ?? meta.descripcion}</p>
               </div>
             ))}
           </div>
@@ -871,7 +941,7 @@ export function UCADPage() {
                   >
                     {v.titulo}
                   </h3>
-                  <p className="mt-2 text-slate-600">{v.desc}</p>
+                  <p className="mt-2 text-slate-600 text-justify">{v.desc}</p>
                 </div>
               </div>
             ))}
@@ -910,7 +980,7 @@ export function UCADPage() {
                   Zona de Influencia
                 </h3>
               </div>
-              <p className="text-slate-600">
+              <p className="text-slate-600 text-justify">
                 Departamento de Córdoba (Sede principal en Montería + Unidad
                 Móvil).
               </p>
@@ -936,7 +1006,7 @@ export function UCADPage() {
                   Grupos Prioritarios
                 </h3>
               </div>
-              <ul className="space-y-3 text-slate-600">
+              <ul className="space-y-3 text-slate-600 text-justify">
                 <li className="flex items-center gap-2">
                   <span
                     className="h-2 w-2 rounded-full"
@@ -961,135 +1031,6 @@ export function UCADPage() {
               </ul>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* 8. CLASIFICACIÓN DEL RIESGO */}
-      <section
-        ref={clasificacionRef}
-        className="px-8 py-32"
-        style={{ backgroundColor: UCAD_COLORS.grisTecnico }}
-      >
-        <div className="mx-auto max-w-6xl">
-          <h2
-            className="mb-6 text-center text-4xl font-bold tracking-tight md:text-5xl"
-            style={{ color: UCAD_COLORS.azulProfundo }}
-          >
-            Clasificación del Riesgo
-          </h2>
-          <p className="mb-16 text-center text-slate-600">
-            Protocolos de seguimiento
-          </p>
-
-          <div className="grid gap-8 md:grid-cols-3">
-            <div
-              ref={(el) => {
-                riesgoCardsRef.current[0] = el!
-              }}
-              className="rounded-3xl border-2 p-8"
-              style={{
-                borderColor: UCAD_COLORS.verdeReti,
-                backgroundColor: 'white',
-              }}
-            >
-              <div className="mb-6 flex items-center gap-3">
-                <Activity
-                  className="h-8 w-8"
-                  style={{ color: UCAD_COLORS.verdeReti }}
-                  strokeWidth={1.5}
-                />
-                <h3
-                  className="text-xl font-bold"
-                  style={{ color: UCAD_COLORS.azulProfundo }}
-                >
-                  Riesgo Bajo/Leve
-                </h3>
-              </div>
-              <p className="text-slate-600">
-                Control anual o cada 6-12 meses en UCAD.
-              </p>
-            </div>
-
-            <div
-              ref={(el) => {
-                riesgoCardsRef.current[1] = el!
-              }}
-              className="rounded-3xl border-2 p-8"
-              style={{
-                borderColor: UCAD_COLORS.azulUCAD,
-                backgroundColor: 'white',
-              }}
-            >
-              <div className="mb-6 flex items-center gap-3">
-                <TrendingUp
-                  className="h-8 w-8"
-                  style={{ color: UCAD_COLORS.azulUCAD }}
-                  strokeWidth={1.5}
-                />
-                <h3
-                  className="text-xl font-bold"
-                  style={{ color: UCAD_COLORS.azulProfundo }}
-                >
-                  Riesgo Moderado
-                </h3>
-              </div>
-              <p className="text-slate-600">
-                Optimización de metas metabólicas y control semestral.
-              </p>
-            </div>
-
-            <div
-              ref={(el) => {
-                riesgoCardsRef.current[2] = el!
-              }}
-              className="rounded-3xl border-2 p-8"
-              style={{
-                borderColor: UCAD_COLORS.rojoAlerta,
-                backgroundColor: 'white',
-              }}
-            >
-              <div className="mb-6 flex items-center gap-3">
-                <AlertTriangle
-                  className="h-8 w-8"
-                  style={{ color: UCAD_COLORS.rojoAlerta }}
-                  strokeWidth={1.5}
-                />
-                <h3
-                  className="text-xl font-bold"
-                  style={{ color: UCAD_COLORS.rojoAlerta }}
-                >
-                  Alto/Muy Alto Riesgo
-                </h3>
-              </div>
-              <p className="font-medium text-slate-700">
-                RD Severa o Proliferativa:{' '}
-                <span
-                  className="font-extrabold"
-                  style={{ color: UCAD_COLORS.rojoAlerta }}
-                >
-                  Referencia inmediata
-                </span>{' '}
-                a especialista en Retina para tratamiento láser o cirugía.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA final */}
-      <section className="px-8 py-24">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="mb-8 text-lg text-slate-600">
-            UCAD Te Veo y Te Ves — Un futuro sin retinopatía diabética evitable.
-          </p>
-          <Button
-            onClick={() => {
-              window.open('/UCAD.pdf', '_blank')
-            }}
-            className="!bg-slate-800 hover:!bg-[var(--color-title)] !border-gray-900"
-          >
-            Descargar presentación PDF
-          </Button>
         </div>
       </section>
     </div>

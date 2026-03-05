@@ -7,114 +7,207 @@ gsap.registerPlugin(ScrollTrigger)
 
 export function SectionQueRevisamos() {
   const { data } = useContent()
-  const queRevisamos = (data as { queRevisamos?: { title: string; text: string } })?.queRevisamos
+  const queRevisamos = (
+    data as {
+      queRevisamos?: {
+        title: string
+        text: string
+        titleRight?: string
+        textRight?: string
+        ctaText?: string | null
+        ctaLinkType?: 'page' | 'section' | null
+        ctaLinkValue?: string | null
+        ctaTextLeft?: string | null
+        ctaLinkTypeLeft?: 'page' | 'section' | null
+        ctaLinkValueLeft?: string | null
+      }
+    }
+  )?.queRevisamos
   const sectionRef = useRef<HTMLElement>(null)
   const glassesRef = useRef<HTMLDivElement>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
+  const contentLeftRef = useRef<HTMLDivElement>(null)
+  const contentRightRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // SETEO INICIAL: Empezamos YA dentro del lente
-      gsap.set(glassesRef.current, {
+      const glasses = glassesRef.current
+      const left = contentLeftRef.current
+      const right = contentRightRef.current
+      if (!glasses || !left) return
+
+      // --- OPTIMIZACIÓN DE RENDIMIENTO ---
+      // Usamos force3D para que la gafa use la GPU
+      gsap.set(glasses, {
         scale: 12,
         xPercent: 180,
         opacity: 1,
+        force3D: true, // Crucial para eliminar el lag
+        transformOrigin: 'center center',
       })
-      gsap.set(contentRef.current, {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-      })
+
+      gsap.set(left, { opacity: 1, scale: 1, y: 0, force3D: true })
+      if (right)
+        gsap.set(right, { opacity: 0, scale: 0.8, y: 40, force3D: true })
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=250%',
+          end: '+=200%', // Distancia corta para que sea ágil
           pin: true,
-          scrub: 1,
+          scrub: 0.5, // Un scrub bajo (0.5) responde más rápido que 1
         },
       })
 
-      // 1. PAUSA INICIAL: El usuario llega y ve la info dentro del lente
-      tl.to({}, { duration: 1.5 })
+      // Animaciones más directas y cortas
+      tl.to(left, { opacity: 0, scale: 0.9, duration: 0.4 })
 
-      // 2. EL "REVEAL": Se quita el zoom; el texto desaparece desde el inicio
       tl.to(
-        contentRef.current,
-        {
-          opacity: 0,
-          scale: 0.92,
-          y: -30,
-          duration: 0.8,
-          ease: 'power2.in',
-        },
-        0,
-      )
-      tl.to(
-        glassesRef.current,
+        glasses,
         {
           scale: 1.8,
           xPercent: 0,
-          duration: 2.5,
-          ease: 'power2.inOut',
+          duration: 0.8,
+          ease: 'none', // "none" en scrub se siente más conectado al dedo/ratón
         },
-        '<',
+        '-=0.2',
       )
 
-      // 3. FINAL: La gafa se mantiene un momento y luego sale la sección
-      tl.to(glassesRef.current, {
-        opacity: 0,
-        y: -50,
-        duration: 1,
+      tl.to({}, { duration: 0.2 }) // Pausa mínima
+
+      tl.to(glasses, {
+        scale: 12,
+        xPercent: -180,
+        duration: 0.8,
+        ease: 'none',
       })
+
+      if (right) {
+        tl.to(right, { opacity: 1, scale: 1, y: 0, duration: 0.4 }, '-=0.4')
+      }
+
+      tl.to({}, { duration: 0.3 })
+
+      tl.to(right, { opacity: 0, duration: 0.3 })
+
+      tl.to(
+        glasses,
+        {
+          scale: 1.8,
+          xPercent: 0,
+          duration: 0.8,
+          ease: 'none',
+        },
+        '-=0.2',
+      )
     }, sectionRef)
 
     return () => ctx.revert()
   }, [])
 
   if (!queRevisamos) return null
-  const { title, text } = queRevisamos
+  const {
+    title,
+    text,
+    titleRight = '',
+    textRight = '',
+    ctaText,
+    ctaLinkType,
+    ctaLinkValue,
+    ctaTextLeft,
+    ctaLinkTypeLeft,
+    ctaLinkValueLeft,
+  } = queRevisamos
+
+  const getCtaHref = (linkType: 'page' | 'section' | null | undefined, linkValue: string | null | undefined): string | null => {
+    if (!linkType || !linkValue) return null
+    return linkType === 'page'
+      ? linkValue.startsWith('/')
+        ? linkValue
+        : `/${linkValue}`
+      : `#${String(linkValue).replace(/^#/, '')}`
+  }
+  const ctaHrefRight = ctaText ? getCtaHref(ctaLinkType ?? 'page', ctaLinkValue ?? '/retinher-transforma') : null
+  const ctaHrefLeft = ctaTextLeft ? getCtaHref(ctaLinkTypeLeft ?? 'page', ctaLinkValueLeft ?? '/') : null
 
   return (
     <section ref={sectionRef} className="relative bg-white overflow-hidden">
-      {/* Tu textura de ruido sutil */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-multiply z-0"
-        style={{
-          backgroundImage: `url('https://grainy-gradients.vercel.app/noise.svg')`,
-        }}
-      ></div>
-
-      <div className="relative flex min-h-screen w-full items-center justify-center px-4 sm:px-6">
-        {/* LAS GAFAS - Capa superior */}
+      {/* QUITAMOS filtros pesados del fondo si los hubiera */}
+      <div className="relative flex min-h-screen w-full items-center justify-center">
+        {/* IZQUIERDO */}
         <div
-          ref={glassesRef}
-          className="absolute z-20 w-[min(90vw,500px)] sm:w-[400px] md:w-[600px] lg:w-[800px] pointer-events-none flex justify-center"
-        >
-          <img
-            src="public/gafas.png"
-            alt="Ophthalmology Glasses"
-            className="w-full object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.2)]"
-            style={{ filter: 'brightness(1.02)' }}
-          />
-        </div>
-
-        {/* EL CONTENIDO - Se ve al inicio por el hueco del lente */}
-        <div
-          ref={contentRef}
-          className="relative z-10 max-w-3xl px-4 sm:px-6 md:px-10 text-center sm:text-left"
+          ref={contentLeftRef}
+          className="absolute z-30 max-w-4xl px-10 text-center pointer-events-none"
         >
           <h2
-            className="mt-4 sm:mt-6 md:mt-8 text-2xl sm:text-3xl md:text-5xl lg:text-7xl xl:text-8xl font-bold tracking-tighter leading-[0.9]"
-            style={{ color: 'var(--color-title)', letterSpacing: '-0.01em' }}
+            className="text-5xl md:text-8xl font-bold tracking-tighter text-slate-900"
+            style={{
+              color: '#3d3f89',
+              letterSpacing: '-0.00em',
+              wordSpacing: '0.1em',
+            }}
           >
             {title}
           </h2>
-
-          <p className="mt-6 sm:mt-8 md:mt-10 text-base sm:text-lg md:text-xl lg:text-2xl text-slate-500 font-light leading-relaxed max-w-2xl mx-auto">
+          <p className="mt-8 text-xl text-slate-700 font-light text-justify">
             {text}
           </p>
+          {ctaTextLeft && ctaHrefLeft && (
+            <div className="mt-10 pointer-events-auto">
+              <a
+                href={ctaHrefLeft}
+                className="inline-block px-8 py-4 rounded-xl font-bold text-white bg-[var(--color-btn)] hover:opacity-90 transition-opacity"
+              >
+                {ctaTextLeft}
+              </a>
+            </div>
+          )}
+        </div>
+
+        {/* GAFAS - en móvil ancho para que se vean completas, en desktop tamaño fijo */}
+        <div
+          ref={glassesRef}
+          className="absolute z-20 w-[88vw] max-w-[600px] lg:w-[900px] pointer-events-none flex justify-center items-center"
+          style={{ willChange: 'transform, opacity' }}
+        >
+          <img
+            src="/gafas.png"
+            alt="Gafas"
+            className="w-full h-auto object-contain max-h-[70vh] md:max-h-none"
+            // Evita sombras muy complejas que causen lag al escalar
+            style={{ filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.1))' }}
+          />
+        </div>
+
+        {/* DERECHO */}
+        <div
+          ref={contentRightRef}
+          className="absolute z-30 max-w-4xl px-10 text-center pointer-events-none"
+        >
+          <h2
+            className="text-5xl md:text-8xl font-bold tracking-tighter text-slate-900"
+            style={{
+              color: '#3d3f89',
+              letterSpacing: '-0.00em',
+              wordSpacing: '0.1em',
+            }}
+          >
+            {titleRight}
+          </h2>
+          <p className="mt-8 text-xl text-slate-700 font-light text-justify">
+            {textRight}
+          </p>
+
+          {ctaText && ctaHrefRight && (
+            <div className="mt-10 pointer-events-auto">
+              <a
+                href={ctaHrefRight}
+                className="inline-block px-8 py-4 rounded-xl font-bold text-white bg-[var(--color-btn)] hover:opacity-90 transition-opacity"
+              >
+                {ctaText}
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </section>

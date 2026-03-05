@@ -103,12 +103,12 @@ export function SectionDoctor() {
             >
               {nombre}
             </h2>
-            <p className="mt-2 text-base sm:text-lg text-slate-500 font-medium">
+            <p className="mt-2 text-base sm:text-lg text-slate-500 font-medium text-justify">
               {titulo}
             </p>
             <p
               ref={descRef}
-              className="mt-6 sm:mt-8 text-base sm:text-lg text-slate-600 font-light leading-relaxed"
+              className="mt-6 sm:mt-8 text-base sm:text-lg text-slate-600 font-light leading-relaxed text-justify"
             >
               {descripcion}
             </p>

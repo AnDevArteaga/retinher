@@ -3,13 +3,14 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Hero } from '../components/sections/Hero'
 import { SectionDoctor } from '../components/sections/SectionDoctor'
-import { SectionReconocimientos } from '../components/sections/SectionReconocimientos'
+import { SectionSellosReconocimientosHome } from '../components/sections/SectionSellosReconocimientosHome'
 import { SectionUCAD } from '../components/sections/SectionUCAD'
-import { SectionAbout } from '../components/sections/SectionAbout'
+// import { SectionAbout } from '../components/sections/SectionAbout'
 import { SectionServicios } from '../components/sections/SectionServicios'
 import { SectionQueRevisamos } from '../components/sections/SectionQueRevisamos'
 import { GalleryHorizontal } from '../components/sections/GalleryHorizontal'
-import { SectionImagenes } from '../components/sections/SectionImagenes'
+import { SectionNoticias } from '../components/sections/SectionNoticias'
+// import { SectionImagenes } from '../components/sections/SectionImagenes'
 import { VisionTest } from '../components/shared/VisionTest'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -39,14 +40,15 @@ export function HomePage() {
   return (
     <div ref={wrapperRef} className="relative">
       <Hero />
-      <SectionReconocimientos />
+      <VisionTest />
+      <SectionQueRevisamos />
+      <SectionSellosReconocimientosHome />
       <SectionUCAD />
       <SectionServicios />
       <SectionDoctor />
-      <VisionTest />
-      <SectionAbout />
+      {/* <SectionAbout /> */}
       <GalleryHorizontal />
-      <SectionQueRevisamos />
+      <SectionNoticias />
       {/* <SectionImagenes /> */}
     </div>
   )

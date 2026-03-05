@@ -40,6 +40,7 @@ function getBackgroundAt(x: number, y: number): { r: number; g: number; b: numbe
   return null;
 }
 
+/** Si estamos sobre una zona que fuerza cursor claro (fondo oscuro) */
 function isOverCursorLightZone(x: number, y: number): boolean {
   let el: Element | null = document.elementFromPoint(x, y);
   while (el) {
@@ -49,8 +50,19 @@ function isOverCursorLightZone(x: number, y: number): boolean {
   return false;
 }
 
+/** Si estamos sobre una zona que fuerza cursor oscuro (fondo claro/blanco) */
+function isOverCursorDarkZone(x: number, y: number): boolean {
+  let el: Element | null = document.elementFromPoint(x, y);
+  while (el) {
+    if (el.hasAttribute?.("data-cursor-dark")) return true;
+    el = el.parentElement;
+  }
+  return false;
+}
+
 function isBackgroundDark(x: number, y: number): boolean {
-  if (isOverCursorLightZone(x, y)) return true; // forzar cursor blanco (fondo oscuro)
+  if (isOverCursorDarkZone(x, y)) return false; // forzar cursor oscuro (fondo claro)
+  if (isOverCursorLightZone(x, y)) return true;  // forzar cursor blanco (fondo oscuro)
   const color = getBackgroundAt(x, y);
   if (!color) return false; // default: fondo claro
   const lum = getLuminance(color.r, color.g, color.b);

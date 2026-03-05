@@ -140,7 +140,7 @@ export function SectionServicios() {
                 >
                   {s.title}
                 </h3>
-                <p className="mt-3 text-sm sm:text-base text-slate-500 font-light leading-relaxed">
+                <p className="mt-3 text-sm sm:text-base text-slate-500 font-light leading-relaxed text-justify">
                   {s.description}
                 </p>
               </div>
@@ -182,7 +182,7 @@ export function SectionServicios() {
                   >
                     {s.title}
                   </h3>
-                  <p className="mt-4 sm:mt-6 md:mt-8 text-base sm:text-lg md:text-xl text-slate-500 font-light leading-relaxed max-w-md">
+                  <p className="mt-4 sm:mt-6 md:mt-8 text-base sm:text-lg md:text-xl text-slate-500 font-light leading-relaxed max-w-md text-justify">
                     {s.description}
                   </p>
                 </div>
@@ -191,15 +191,16 @@ export function SectionServicios() {
           ))}
         </div>
 
-        {/* CTA - Adaptado a fondo blanco */}
+        {/* CTA Descargar portafolio */}
         <div className="relative z-50 w-full flex justify-center mt-8 md:mt-0">
-          <a
-            href="#"
-            className="inline-flex h-14 items-center justify-center rounded-full w-md text-sm font-bold uppercase cursor-none tracking-widest text-white transition-all hover:scale-105 active:scale-95"
+          <button
+            type="button"
+            onClick={() => window.open('/portafolio-de-servicios.pdf', '_blank')}
+            className="inline-flex h-14 items-center justify-center rounded-full px-8 text-sm font-bold uppercase cursor-none tracking-widest text-white transition-all hover:scale-105 active:scale-95"
             style={{ backgroundColor: 'var(--color-btn)' }}
           >
-            Agendar Valoración Ahora →
-          </a>
+            Descargar portafolio →
+          </button>
         </div>
       </div>
     </section>

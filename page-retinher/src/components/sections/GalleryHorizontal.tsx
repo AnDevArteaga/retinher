@@ -79,7 +79,7 @@ export function GalleryHorizontal() {
         >
           {gallery.title}
         </h2>
-        <p className="mt-2 text-sm sm:text-base md:text-lg text-[var(--color-text-muted)]">
+        <p className="mt-2 text-sm sm:text-base md:text-lg text-[var(--color-text-muted)] text-justify">
           {gallery.subtitle}
         </p>
       </div>
@@ -110,7 +110,7 @@ export function GalleryHorizontal() {
               />
             )}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-              <p className="text-sm font-medium text-white">{item.caption}</p>
+              <p className="text-sm font-medium text-white text-justify">{item.caption}</p>
             </div>
           </div>
         ))}

@@ -65,7 +65,7 @@ export function SectionImagenes() {
         >
           {title}
         </h2>
-        <p className="mb-10 sm:mb-12 md:mb-16 text-sm sm:text-base md:text-lg text-[var(--color-text-muted)]">{subtitle}</p>
+        <p className="mb-10 sm:mb-12 md:mb-16 text-sm sm:text-base md:text-lg text-[var(--color-text-muted)] text-justify">{subtitle}</p>
         <div
           ref={gridRef}
           className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6"

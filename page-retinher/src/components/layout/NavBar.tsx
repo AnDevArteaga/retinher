@@ -23,7 +23,7 @@ export function NavBar() {
     <header
       className={`fixed left-0 right-0 top-0 z-50 transition-colors duration-300 ${
         isTransparent
-          ? 'bg-transparent text-white'
+          ? 'bg-white text-[var(--color-text)] shadow-sm'
           : 'bg-white text-[var(--color-text)] shadow-sm'
       }`}
       aria-label="Navegación principal"
@@ -38,7 +38,7 @@ export function NavBar() {
             src="/retiner1.png"
             alt="Retinher"
             className={`h-auto w-auto object-contain object-left ${
-              isTransparent ? 'brightness-0 invert' : ''
+              isTransparent ? '' : ''
             }`}
           />
         </Link>
@@ -53,14 +53,16 @@ export function NavBar() {
               to={item.to}
               className={`group relative py-2 text-md font-medium tracking-wide transition-colors ${
                 isTransparent
-                  ? 'text-white/95 hover:text-white'
+                  ? 'text-gray-600 hover:text-[var(--color-title-dark)]'
                   : 'text-gray-600 hover:text-[var(--color-title-dark)]'
-              } ${location.pathname === item.to ? 'font-semibold' : ''}`}
+              } ${location.pathname === item.to ? 'font-semibold text-[var(--color-title)]' : ''}`}
             >
               {item.label}
               <span
                 className={`absolute bottom-0 left-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full ${
-                  isTransparent ? 'bg-white' : 'bg-[var(--color-btn)]'
+                  isTransparent
+                    ? 'bg-[var(--color-btn)]'
+                    : 'bg-[var(--color-btn)]'
                 } ${location.pathname === item.to ? 'w-full' : ''}`}
                 aria-hidden
               />
@@ -72,7 +74,9 @@ export function NavBar() {
           <button
             type="button"
             className={`flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-lg transition-colors min-[1600px]:hidden ${
-              isTransparent ? 'text-white' : 'text-[var(--color-text)]'
+              isTransparent
+                ? 'text-[var(--color-text)]'
+                : 'text-[var(--color-text)]'
             }`}
             onClick={() => setMobileOpen((o) => !o)}
             aria-expanded={mobileOpen}

@@ -100,10 +100,10 @@ export function SectionAbout() {
             className="space-y-8 sm:space-y-10 md:space-y-12"
           >
             <div className="space-y-6 sm:space-y-8">
-              <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white/60 font-light">
+              <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white/60 font-light text-justify">
                 <span dangerouslySetInnerHTML={{ __html: about.intro }} />
               </p>
-              <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white/60 font-light">
+              <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white/60 font-light text-justify">
                 <span dangerouslySetInnerHTML={{ __html: about.purpose }} />
               </p>
             </div>
@@ -111,7 +111,7 @@ export function SectionAbout() {
             <div className="pt-4">
               <Button
                 onClick={() =>
-                  window.open('public/portafolio-de-servicios.pdf', '_blank')
+                  window.open('/portafolio-de-servicios.pdf', '_blank')
                 }
               >
                 <span className="relative z-10 flex items-center gap-3 group-hover:text-white">

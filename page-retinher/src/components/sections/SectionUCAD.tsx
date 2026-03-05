@@ -40,7 +40,7 @@ export function SectionUCAD() {
               {titulo}
             </h2>
           </div>
-          <p className="max-w-xl text-sm sm:text-base md:text-lg font-light leading-relaxed text-white/90">
+          <p className="max-w-xl text-sm sm:text-base md:text-lg font-light leading-relaxed text-white/90 text-justify">
             {descripcion}
           </p>
           <Link

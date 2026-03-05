@@ -130,7 +130,10 @@ export function VisionTest() {
   }
 
   return (
-    <section className="min-h-screen bg-slate-100 py-20 flex items-center justify-center font-sans">
+    <section
+      id="vision-lab"
+      className="min-h-screen bg-slate-100 py-20 flex items-center justify-center font-sans"
+    >
       <div className="max-w-2xl w-full px-6" ref={cardRef}>
         {/* INICIO */}
         {step === -1 && (
@@ -141,7 +144,7 @@ export function VisionTest() {
                 Nivel Clínico
               </span>
             </h2>
-            <p className="text-slate-500 mb-8 leading-relaxed">
+            <p className="text-slate-500 mb-8 leading-relaxed text-justify">
               Este test interactivo evalúa agudeza, contraste, enfoque y
               percepción de color.
             </p>
@@ -318,13 +321,22 @@ export function VisionTest() {
               ))}
             </div>
             <div className="bg-[var(--color-title)] p-6 rounded-3xl text-white mb-8">
-              <p className="text-xs opacity-70 leading-relaxed italic">
+              <p className="text-xs opacity-70 leading-relaxed italic text-justify">
                 *Este es un tamizaje digital. se recomienda una evaluación
                 clínica completa para confirmar estos hallazgos.*
               </p>
             </div>
             <button
-              onClick={() => (window.location.href = '#contacto')}
+              onClick={() => {
+                const whatsapp: { numero: string; mensaje: string } = {
+                  numero: '573227861029',
+                  mensaje: 'Hola, me gustaría agendar una consulta',
+                }
+                window.open(
+                  `https://wa.me/${whatsapp.numero}?text=${encodeURIComponent(whatsapp.mensaje)}`,
+                  '_blank',
+                )
+              }}
               className="w-full bg-[var(--color-btn)] py-5 rounded-2xl text-white font-black hover:bg-[var(--color-btn-hover)] transition-all shadow-xl shadow-[var(--color-btn)] uppercase tracking-widest"
             >
               Agendar con Especialista

@@ -2,8 +2,13 @@ import { useContent } from "../../contexts/ContentContext";
 
 export function Footer() {
   const { data } = useContent();
-  const f = (data as { footer?: { sede1: string; sede2: string; pbx: string; email: string; city: string; copyright: string; privacy: string } })?.footer;
+  const f = (data as { footer?: { sede1: string; sede2: string; pbx: string; email: string; soloLlamadas?: string; soloMensaje?: string; emailGestion?: string; emailGeneral?: string; city: string; copyright: string; privacy: string } })?.footer;
   if (!f) return null;
+
+  const soloLlamadas = f.soloLlamadas ?? "3218373481";
+  const soloMensaje = f.soloMensaje ?? "3227861029";
+  const emailGestion = f.emailGestion ?? "Gestión.retinhersas@gmail.com";
+  const emailGeneral = f.emailGeneral ?? "retinhersas@gmail.com";
 
   return (
     <footer className="border-t border-[var(--color-text-muted)]/20 bg-[var(--color-bg-primary)]">
@@ -16,7 +21,7 @@ export function Footer() {
             >
               Sede 1
             </h3>
-            <p className="mt-2 text-[var(--color-text-muted)]">{f.sede1}</p>
+            <p className="mt-2 text-[var(--color-text-muted)] text-justify">{f.sede1}</p>
           </div>
           <div>
             <h3
@@ -25,7 +30,7 @@ export function Footer() {
             >
               Sede 2
             </h3>
-            <p className="mt-2 text-[var(--color-text-muted)]">{f.sede2}</p>
+            <p className="mt-2 text-[var(--color-text-muted)] text-justify">{f.sede2}</p>
           </div>
           <div>
             <h3
@@ -34,14 +39,23 @@ export function Footer() {
             >
               Contacto
             </h3>
-            <p className="mt-2 text-[var(--color-text-muted)]">
-              PBX: {f.pbx}
+            <p className="mt-2 text-[var(--color-text-muted)] text-justify">
+              Sólo llamadas:{" "}
+              <a href={`tel:${soloLlamadas}`} className="text-[var(--color-btn)] underline-offset-4 hover:opacity-90">
+                {soloLlamadas}
+              </a>
               <br />
-              <a
-                href={`mailto:${f.email}`}
-                className="text-[var(--color-btn)] underline-offset-4 hover:opacity-90"
-              >
-                {f.email}
+              Sólo mensaje:{" "}
+              <a href={`tel:${soloMensaje}`} className="text-[var(--color-btn)] underline-offset-4 hover:opacity-90">
+                {soloMensaje}
+              </a>
+              <br />
+              <a href={`mailto:${emailGestion}`} className="text-[var(--color-btn)] underline-offset-4 hover:opacity-90">
+                {emailGestion}
+              </a>
+              <br />
+              <a href={`mailto:${emailGeneral}`} className="text-[var(--color-btn)] underline-offset-4 hover:opacity-90">
+                {emailGeneral}
               </a>
             </p>
           </div>

@@ -1,20 +1,40 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useContent } from '../../contexts/ContentContext'
 import { Button } from '../ui/button'
 
+type MediaItem = { type: 'image' | 'video'; url: string }
+
+type SelloItem = {
+  id: string
+  titulo: string
+  logo: string
+  descripcion: string
+  porQue?: string
+  queHicieron?: unknown[]
+  stats?: unknown[]
+  tags?: string[]
+  color: string
+  media?: MediaItem[]
+}
+
 export function SectionReconocimientos() {
   const { data } = useContent()
-  const sellosImpacto = (data as { sellosImpacto?: { titulo: string; subtitulo: string; sellos: Array<{ id: string; titulo: string; logo: string; descripcion: string; porQue?: string; queHicieron?: unknown[]; stats?: unknown[]; tags?: string[]; color: string }> } })?.sellosImpacto
-  if (!sellosImpacto) return null
-  const { titulo, subtitulo, sellos } = sellosImpacto
+  const sellosImpacto = (
+    data as {
+      sellosImpacto?: { titulo: string; subtitulo: string; sellos: SelloItem[] }
+    }
+  )?.sellosImpacto
   const [isOpen, setIsOpen] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [carouselBySlide, setCarouselBySlide] = useState<
+    Record<number, number>
+  >({})
   const overlayRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const slideRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  // Abrir/Cerrar
   const openExperience = (index = 0) => {
     setIsOpen(true)
     setCurrentSlide(index)
@@ -31,7 +51,6 @@ export function SectionReconocimientos() {
     }
   }, [isOpen])
 
-  // GSAP: Animación de transiciones
   useEffect(() => {
     if (!isOpen) return
 
@@ -60,6 +79,9 @@ export function SectionReconocimientos() {
     }
   }, [currentSlide, isOpen])
 
+  if (!sellosImpacto) return null
+  const { titulo, subtitulo, sellos } = sellosImpacto
+
   return (
     <>
       <section className="relative min-h-screen w-full overflow-hidden bg-white py-16 sm:py-20 md:py-24 lg:py-32 font-sans">
@@ -74,7 +96,7 @@ export function SectionReconocimientos() {
                 {titulo.split(' ').pop()}
               </span>
             </h2>
-            <p className="mt-4 sm:mt-6 text-slate-500 text-base sm:text-lg md:text-xl font-light">
+            <p className="mt-4 sm:mt-6 text-slate-500 text-base sm:text-lg md:text-xl font-light text-center">
               {subtitulo}
             </p>
           </div>
@@ -149,54 +171,160 @@ export function SectionReconocimientos() {
                 }}
                 className="relative h-full w-screen flex items-center px-4 sm:px-6 md:px-12 lg:px-24 overflow-y-auto pb-28 pr-14 sm:pb-32 sm:pr-16 md:pr-20"
               >
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 xl:gap-24 items-start w-full max-w-6xl mx-auto overflow-y-auto max-h-[calc(100vh-10rem)] py-8 sm:py-12 md:py-16">
-                  {/* Visual - siempre arriba en móvil, izquierda en desktop */}
-                  <div className="flex flex-col items-center lg:sticky lg:top-8 order-1">
-                    <div className="animate-up h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-80 lg:w-80 xl:h-96 xl:w-96 rounded-2xl sm:rounded-[2rem] md:rounded-[3rem] bg-white flex items-center justify-center p-6 sm:p-8 md:p-12 shadow-2xl border border-slate-100 shrink-0">
-                      <img
-                        src={sello.logo}
-                        alt={sello.titulo}
-                        className="max-h-full w-full object-contain"
-                      />
-                    </div>
-                    <div className="animate-up mt-4 sm:mt-6 md:mt-8 grid grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-                      {((sello.stats ?? []) as Array<{ valor: string; unidad: string; label: string }>).map((s, idx) => (
-                        <div key={idx}>
-                          <div className="text-2xl sm:text-3xl md:text-4xl font-black">
-                            {s.valor}
-                            <span className="text-[var(--color-btn)] text-xl">
-                              {s.unidad}
-                            </span>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 xl:gap-20 items-start w-full max-w-[85rem] mx-auto overflow-y-auto max-h-[calc(100vh-10rem)] py-8 sm:py-12 md:py-16">
+                  {/* Columna izquierda: carrusel grande + stats */}
+
+                  <div className="flex flex-col lg:sticky lg:top-8 order-1 w-full">
+                    <h3
+                      className="text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tighter text-slate-900 min-w-0 mb-4"
+                      style={{ letterSpacing: '-0.02em' }}
+                    >
+                      {sello.titulo}
+                    </h3>
+                    {(() => {
+                      const mediaList: MediaItem[] =
+                        sello.media && sello.media.length > 0
+                          ? sello.media
+                          : [{ type: 'image', url: sello.logo }]
+                      const idx =
+                        i === currentSlide ? (carouselBySlide[i] ?? 0) : 0
+                      const current = mediaList[idx]
+                      const go = (d: number) => {
+                        const next =
+                          (idx + d + mediaList.length) % mediaList.length
+                        setCarouselBySlide((prev) => ({ ...prev, [i]: next }))
+                      }
+                      const setIdx = (k: number) =>
+                        setCarouselBySlide((prev) => ({ ...prev, [i]: k }))
+                      return (
+                        <>
+                          <div className="animate-up w-full">
+                            <div
+                              className="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-inner"
+                              style={{ aspectRatio: '16/10' }}
+                            >
+                              {current.type === 'video' ? (
+                                <video
+                                  src={current.url}
+                                  controls
+                                  className="h-full w-full"
+                                  preload="metadata"
+                                />
+                              ) : (
+                                <img
+                                  src={current.url}
+                                  alt=""
+                                  className={`h-full w-full object-contain transition-opacity duration-300 `}
+                                  onError={(e) => {
+                                    ;(
+                                      e.currentTarget as HTMLImageElement
+                                    ).style.background =
+                                      'linear-gradient(135deg,#e2e8f0,#cbd5e1)'
+                                  }}
+                                />
+                              )}
+                              {mediaList.length > 1 && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={(ev) => {
+                                      ev.stopPropagation()
+                                      go(-1)
+                                    }}
+                                    className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white"
+                                    aria-label="Anterior"
+                                  >
+                                    <ChevronLeft className="h-6 w-6 text-slate-600" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(ev) => {
+                                      ev.stopPropagation()
+                                      go(1)
+                                    }}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white"
+                                    aria-label="Siguiente"
+                                  >
+                                    <ChevronRight className="h-6 w-6 text-slate-600" />
+                                  </button>
+                                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                                    {mediaList.map((_, k) => (
+                                      <button
+                                        key={k}
+                                        type="button"
+                                        onClick={(ev) => {
+                                          ev.stopPropagation()
+                                          setIdx(k)
+                                        }}
+                                        className={`h-2 rounded-full transition-all ${k === idx ? 'w-6 bg-white' : 'w-2 bg-white/60'}`}
+                                        aria-label={`Imagen ${k + 1}`}
+                                      />
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                            {mediaList.length > 1 && (
+                              <p className="mt-2 text-center text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                                Galería del sello
+                              </p>
+                            )}
                           </div>
-                          <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                            {s.label}
+                          <div className="animate-up mt-6 sm:mt-8 grid grid-cols-2 gap-4 sm:gap-6">
+                            {(
+                              (sello.stats ?? []) as Array<{
+                                valor: string
+                                unidad: string
+                                label: string
+                              }>
+                            ).map((s, idxStat) => (
+                              <div key={idxStat}>
+                                <div className="text-2xl sm:text-3xl md:text-4xl font-black">
+                                  {s.valor}
+                                  <span className="text-[var(--color-btn)] text-xl">
+                                    {s.unidad}
+                                  </span>
+                                </div>
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                                  {s.label}
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        </>
+                      )
+                    })()}
                   </div>
 
-                  {/* Texto - siempre abajo en móvil, derecha en desktop */}
+                  {/* Columna derecha: logo pequeño + título + texto */}
                   <div className="space-y-5 sm:space-y-6 md:space-y-8 order-2">
-                    <div>
-                      <div className="h-1 w-16 sm:w-20 bg-[var(--color-btn)] mb-4 sm:mb-6" />
-                      <h3
-                        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter text-slate-900"
-                        style={{ letterSpacing: '-0.02em' }}
-                      >
-                        {sello.titulo}
-                      </h3>
+                    <div className="flex flex-wrap items-center gap-4 sm:gap-5">
+                      <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-4xl mx-auto bg-white rounded-xl overflow-hidden">
+                        {/* Lado Izquierdo: Logo (50%) */}
+
+                        <div className="w-full md:w-1/2 flex items-center justify-center">
+                          <img
+                            src={sello.logo}
+                            alt=""
+                            className="max-h-48 w-full object-contain"
+                          />
+                        </div>
+
+                        {/* Lado Derecho: Texto (50%) */}
+                        <div className="w-full md:w-1/2 p-6 flex flex-col justify-center">
+                          <p className="text-base sm:text-lg text-slate-600 font-light leading-relaxed text-justify mt-2">
+                            {sello.descripcion}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-base sm:text-lg text-slate-600 font-light leading-relaxed">
-                      {sello.descripcion}
-                    </p>
 
                     {'porQue' in sello && sello.porQue && (
                       <div>
                         <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 mb-3">
                           Por qué lo tenemos
                         </h4>
-                        <p className="text-slate-600 font-light leading-relaxed">
+                        <p className="text-slate-600 font-light leading-relaxed text-justify">
                           {sello.porQue}
                         </p>
                       </div>
@@ -219,7 +347,7 @@ export function SectionReconocimientos() {
                                     className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
                                     style={{ backgroundColor: sello.color }}
                                   />
-                                  <span className="text-slate-600 font-light leading-relaxed">
+                                  <span className="text-slate-600 font-light leading-relaxed text-justify block">
                                     {String(item)}
                                   </span>
                                 </li>

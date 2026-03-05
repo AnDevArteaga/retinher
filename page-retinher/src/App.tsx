@@ -8,13 +8,17 @@ import { HomePage } from './pages/HomePage'
 import { NosotrosPage } from './pages/NosotrosPage'
 import { UCADPage } from './pages/UCADPage'
 import { SedesPage } from './pages/SedesPage'
+import { RetinherTransformaPage } from './pages/RetinherTransformaPage'
 import { ContentProvider, useContent } from './contexts/ContentContext'
+import { PageSEO } from './components/shared/PageSEO'
 import type { PageSlug } from './data/contentApi'
 
 function slugFromPathname(pathname: string): PageSlug {
-  if (pathname === '/' || pathname.startsWith('/ucad')) return 'home'
+  if (pathname === '/') return 'home'
+  if (pathname === '/ucad-te-veo-te-ves') return 'ucad'
   if (pathname === '/nosotros') return 'nosotros'
   if (pathname === '/sedes') return 'sedes'
+  if (pathname === '/retinher-transforma') return 'retinher_transforma'
   return 'home'
 }
 
@@ -24,6 +28,7 @@ function AppContent() {
   if (loading) return <div className="min-h-screen flex items-center justify-center text-[var(--color-text-muted)]">Cargando…</div>
   return (
     <>
+      <PageSEO />
       <CustomCursor />
       <FloatingWhatsApp />
       <NavBar />
@@ -33,6 +38,7 @@ function AppContent() {
           <Route path="/nosotros" element={<NosotrosPage />} />
           <Route path="/ucad-te-veo-te-ves" element={<UCADPage />} />
           <Route path="/sedes" element={<SedesPage />} />
+          <Route path="/retinher-transforma" element={<RetinherTransformaPage />} />
         </Routes>
       </main>
       <Footer />

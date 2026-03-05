@@ -3,13 +3,13 @@ export const ROUTES = {
   nosotros: '/nosotros',
   ucad: '/ucad-te-veo-te-ves',
   sedes: '/sedes',
-  contacto: '/contacto',
+  retinherTransforma: '/retinher-transforma',
 } as const
 
 export const NAV_LINKS = [
   { to: ROUTES.home, label: 'Inicio' },
   { to: ROUTES.nosotros, label: 'Nosotros' },
-  { to: ROUTES.ucad, label: 'UCAD Te Veo y Te Ves' },
+  { to: ROUTES.ucad, label: 'UCAD Te Veo y Ves' },
+  { to: ROUTES.retinherTransforma, label: 'Retinher Transforma' },
   { to: ROUTES.sedes, label: 'Sedes' },
-  { to: ROUTES.contacto, label: 'Contacto' },
 ] as const

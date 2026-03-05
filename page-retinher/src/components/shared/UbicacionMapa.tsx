@@ -88,7 +88,7 @@ export function UbicacionMapa() {
                 className="ubicacion-card absolute bottom-8 left-8 z-20 hidden md:block max-w-sm rounded-3xl bg-white/95 p-8 backdrop-blur-md shadow-xl border border-slate-100"
               >
                 <h4 className="font-bold text-slate-900 text-lg">Visítanos</h4>
-                <p className="mt-3 text-sm text-slate-600 leading-relaxed">
+                <p className="mt-3 text-sm text-slate-600 leading-relaxed text-justify">
                   {sede.direccion}
                   <br />
                   {sede.barrio}
@@ -99,7 +99,7 @@ export function UbicacionMapa() {
                 <p className="mt-4 text-xs font-black uppercase tracking-widest text-[var(--color-btn)]">
                   Horario de atención
                 </p>
-                <p className="mt-2 text-sm text-slate-600 whitespace-pre-line leading-relaxed">
+                <p className="mt-2 text-sm text-slate-600 whitespace-pre-line leading-relaxed text-justify">
                   {sede.horario}
                 </p>
                 <a

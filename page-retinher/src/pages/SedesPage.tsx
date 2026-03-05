@@ -28,7 +28,7 @@ export function SedesPage() {
       }
     }
   )?.sedes
-  const footer = (data as { footer?: { pbx: string; email: string } })?.footer
+  const footer = (data as { footer?: { pbx: string; email: string; soloLlamadas?: string; soloMensaje?: string; emailGestion?: string; emailGeneral?: string } })?.footer
   const heroRef = useRef<HTMLElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
 
@@ -141,12 +141,12 @@ export function SedesPage() {
                 />
               </div>
               <h3 className="text-lg font-bold text-slate-900">{sede.nombre}</h3>
-              <p className="mt-2 text-slate-600">{sede.direccion}</p>
-              <p className="text-slate-600">{sede.barrio}</p>
-              <p className="text-slate-600">{sede.ciudad}</p>
+              <p className="mt-2 text-slate-600 text-justify">{sede.direccion}</p>
+              <p className="text-slate-600 text-justify">{sede.barrio}</p>
+              <p className="text-slate-600 text-justify">{sede.ciudad}</p>
               <div className="mt-4 flex items-start gap-2 text-slate-600">
                 <Clock className="h-4 w-4 mt-0.5 shrink-0" style={{ color: '#0056b3' }} strokeWidth={1.5} />
-                <span className="whitespace-pre-line text-sm">{sede.horario}</span>
+                <span className="whitespace-pre-line text-sm text-justify block">{sede.horario}</span>
               </div>
             </div>
           ))}
@@ -166,13 +166,31 @@ export function SedesPage() {
               />
             </div>
             <h3 className="text-lg font-bold text-slate-900">Contacto</h3>
-            <p className="mt-2 text-slate-600">{footer.pbx}</p>
+            <p className="mt-2 text-slate-600 text-justify">
+              Sólo llamadas:{" "}
+              <a href={`tel:${footer.soloLlamadas ?? "3218373481"}`} className="text-[var(--color-btn)] hover:opacity-90">
+                {footer.soloLlamadas ?? "3218373481"}
+              </a>
+            </p>
+            <p className="mt-1 text-slate-600 text-justify">
+              Sólo mensaje:{" "}
+              <a href={`tel:${footer.soloMensaje ?? "3227861029"}`} className="text-[var(--color-btn)] hover:opacity-90">
+                {footer.soloMensaje ?? "3227861029"}
+              </a>
+            </p>
             <a
-              href={`mailto:${footer.email}`}
+              href={`mailto:${footer.emailGestion ?? "Gestión.retinhersas@gmail.com"}`}
               className="mt-2 flex items-center gap-2 text-slate-600 hover:text-[var(--color-btn)]"
             >
-              <Mail className="h-4 w-4" />
-              {footer.email}
+              <Mail className="h-4 w-4 shrink-0" />
+              {footer.emailGestion ?? "Gestión.retinhersas@gmail.com"}
+            </a>
+            <a
+              href={`mailto:${footer.emailGeneral ?? "retinhersas@gmail.com"}`}
+              className="mt-1 flex items-center gap-2 text-slate-600 hover:text-[var(--color-btn)]"
+            >
+              <Mail className="h-4 w-4 shrink-0" />
+              {footer.emailGeneral ?? "retinhersas@gmail.com"}
             </a>
           </div>
         </div>
