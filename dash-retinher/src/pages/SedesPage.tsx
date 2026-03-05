@@ -51,11 +51,8 @@ const SEDE_DEFAULTS: Omit<SedeItem, 'id' | 'sedes_id'> = {
 export function SedesPage() {
   const [sedes, setSedes] = useState<{ id: string; titulo: string; subtitulo: string } | null>(null)
   const [sedeList, setSedeList] = useState<SedeItem[]>([])
-  const [footer, setFooter] = useState<{ id: string; sede1: string; sede2: string; pbx: string; email: string; city: string; copyright: string; privacy: string } | null>(null)
-  const [whatsapp, setWhatsapp] = useState<{ id: string; numero: string; mensaje: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState<string | null>(null)
-  const [adding, setAdding] = useState(false)
   const [msg, setMsg] = useState('')
 
   const load = () => {
@@ -63,45 +60,65 @@ export function SedesPage() {
     Promise.all([
       supabase.from('sedes').select('*').maybeSingle(),
       supabase.from('sede_principal').select('*').order('nombre'),
-      supabase.from('footer').select('*').maybeSingle(),
-      supabase.from('whatsapp').select('*').maybeSingle(),
-    ]).then(([s, sp, f, w]) => {
+    ]).then(([s, sp]) => {
       setSedes(s.data ?? null)
       setSedeList((sp.data ?? []) as SedeItem[])
-      setFooter(f.data ?? null)
-      setWhatsapp(w.data ?? null)
       setLoading(false)
     })
   }
 
   useEffect(() => { load() }, [])
 
+  const isTempId = (id: string) => id.startsWith('temp-')
+
   const save = async (table: string, id: string, data: object) => {
     setSaving(id)
     setMsg('')
+    if (table === 'sede_principal' && isTempId(id)) {
+      const sede = data as SedeItem
+      const { data: inserted, error } = await supabase
+        .from('sede_principal')
+        .insert({
+          sedes_id: sede.sedes_id,
+          nombre: sede.nombre,
+          direccion: sede.direccion,
+          barrio: sede.barrio,
+          ciudad: sede.ciudad,
+          horario: sede.horario,
+          mapa_embed_url: sede.mapa_embed_url,
+        })
+        .select()
+        .single()
+      setSaving(null)
+      if (error) setMsg(error.message)
+      else if (inserted) {
+        setMsg('Guardado')
+        setSedeList((prev) => prev.map((s) => (s.id === id ? (inserted as SedeItem) : s)))
+      } else setMsg('No se pudo crear la sede.')
+      return
+    }
     const { data: updated, error } = await supabase.from(table).update(data).eq('id', id).select().maybeSingle()
     setSaving(null)
     if (error) setMsg(error.message)
     else if (updated == null) setMsg('No se guardó: sin permisos de administrador.')
-    else { setMsg('Guardado'); load() }
+    else {
+      setMsg('Guardado')
+      if (table === 'sedes') setSedes(updated as { id: string; titulo: string; subtitulo: string })
+      if (table === 'sede_principal') setSedeList((prev) => prev.map((s) => (s.id === id ? (updated as SedeItem) : s)))
+    }
   }
 
-  const addSede = async () => {
+  const addSede = () => {
     if (!sedes?.id) return
-    setAdding(true)
-    setMsg('')
-    const { data: inserted, error } = await supabase
-      .from('sede_principal')
-      .insert({
+    setSedeList((prev) => [
+      ...prev,
+      {
+        id: `temp-${Date.now()}`,
         sedes_id: sedes.id,
         ...SEDE_DEFAULTS,
-      })
-      .select()
-      .single()
-    setAdding(false)
-    if (error) setMsg(error.message)
-    else if (inserted) { setMsg('Sede añadida'); load() }
-    else setMsg('No se pudo crear la sede.')
+      },
+    ])
+    setMsg('Sede añadida. Rellena y guarda.')
   }
 
   const updateSede = (index: number, patch: Partial<SedeItem>) => {
@@ -110,12 +127,18 @@ export function SedesPage() {
 
   const removeSede = async (id: string) => {
     if (sedeList.length <= 1) { setMsg('Debe quedar al menos una sede.'); return }
-    setSaving(id)
-    setMsg('')
-    const { error } = await supabase.from('sede_principal').delete().eq('id', id)
-    setSaving(null)
-    if (error) setMsg(error.message)
-    else { setMsg('Sede eliminada'); load() }
+    if (!isTempId(id)) {
+      setSaving(id)
+      setMsg('')
+      const { error } = await supabase.from('sede_principal').delete().eq('id', id)
+      setSaving(null)
+      if (error) {
+        setMsg(error.message)
+        return
+      }
+    }
+    setSedeList((prev) => prev.filter((s) => s.id !== id))
+    setMsg('Sede eliminada')
   }
 
   if (loading) return <div className="flex items-center justify-center py-24 text-slate-500">Cargando…</div>
@@ -159,49 +182,18 @@ export function SedesPage() {
                 </form>
               </div>
             ))}
-            <button type="button" onClick={addSede} disabled={adding || !sedes?.id} className="w-full rounded-lg border-2 border-dashed border-[var(--color-btn)]/50 py-4 text-[var(--color-btn)] hover:bg-[var(--color-btn)]/5 disabled:opacity-50">{adding ? 'Añadiendo…' : '+ Añadir otra sede'}</button>
+            <button type="button" onClick={addSede} disabled={!sedes?.id} className="w-full rounded-lg border-2 border-dashed border-[var(--color-btn)]/50 py-4 text-[var(--color-btn)] hover:bg-[var(--color-btn)]/5 disabled:opacity-50">+ Añadir otra sede</button>
           </div>
         </SectionCard>
       ),
-    },
-    {
-      id: 'footer',
-      label: 'Footer',
-      content: footer ? (
-        <SectionCard title="Footer (direcciones, contacto, copyright)">
-          <form onSubmit={(e) => { e.preventDefault(); save('footer', footer.id, footer); }} className="space-y-4">
-            <Input label="Sede 1" value={footer.sede1} onChange={(v) => setFooter({ ...footer, sede1: v })} />
-            <Input label="Sede 2" value={footer.sede2} onChange={(v) => setFooter({ ...footer, sede2: v })} />
-            <Input label="PBX" value={footer.pbx} onChange={(v) => setFooter({ ...footer, pbx: v })} />
-            <Input label="Email" value={footer.email} onChange={(v) => setFooter({ ...footer, email: v })} />
-            <Input label="Ciudad" value={footer.city} onChange={(v) => setFooter({ ...footer, city: v })} />
-            <Input label="Copyright" value={footer.copyright} onChange={(v) => setFooter({ ...footer, copyright: v })} />
-            <Input label="Privacidad" value={footer.privacy} onChange={(v) => setFooter({ ...footer, privacy: v })} />
-            <button type="submit" disabled={!!saving} className="px-4 py-2 bg-[var(--color-btn)] text-[var(--color-btn-text)] rounded-lg hover:bg-[var(--color-btn-hover)] disabled:opacity-50">Guardar</button>
-          </form>
-        </SectionCard>
-      ) : <p className="text-slate-500 py-4">Sin datos.</p>,
-    },
-    {
-      id: 'whatsapp',
-      label: 'WhatsApp',
-      content: whatsapp ? (
-        <SectionCard title="WhatsApp">
-          <form onSubmit={(e) => { e.preventDefault(); save('whatsapp', whatsapp.id, whatsapp); }} className="space-y-4">
-            <Input label="Número" value={whatsapp.numero} onChange={(v) => setWhatsapp({ ...whatsapp, numero: v })} />
-            <Input label="Mensaje" value={whatsapp.mensaje} onChange={(v) => setWhatsapp({ ...whatsapp, mensaje: v })} />
-            <button type="submit" disabled={!!saving} className="px-4 py-2 bg-[var(--color-btn)] text-[var(--color-btn-text)] rounded-lg hover:bg-[var(--color-btn-hover)] disabled:opacity-50">Guardar</button>
-          </form>
-        </SectionCard>
-      ) : <p className="text-slate-500 py-4">Sin datos.</p>,
     },
   ]
 
   return (
     <div className="max-w-3xl space-y-4">
       <h1 className="text-2xl font-bold text-slate-900">Sedes (página Sedes)</h1>
-      <p className="text-sm text-slate-500">Contenido de la página Sedes: título, ubicaciones y datos de contacto en pie.</p>
-      {msg && <p className={`text-sm ${msg === 'Guardado' || msg === 'Sede añadida' || msg === 'Sede eliminada' ? 'text-green-600' : 'text-red-600'}`}>{msg}</p>}
+      <p className="text-sm text-slate-500">Contenido de la página Sedes: título y ubicaciones. El pie de página y WhatsApp se editan en <strong>Footer</strong> (menú lateral).</p>
+      {msg && <p className={`text-sm ${/Guardado|Sede añadida|Sede eliminada|Rellena y guarda/.test(msg) ? 'text-green-600' : 'text-red-600'}`}>{msg}</p>}
       <Tabs tabs={tabs} defaultTab="titulo" />
     </div>
   )

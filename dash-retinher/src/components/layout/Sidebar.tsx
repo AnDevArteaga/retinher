@@ -1,10 +1,13 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Users, MapPin } from 'lucide-react'
+import { LayoutDashboard, Users, MapPin, Sparkles, FileText, Eye } from 'lucide-react'
 
 const pages = [
   { to: '/', label: 'Inicio', icon: LayoutDashboard },
   { to: '/nosotros', label: 'Nosotros', icon: Users },
+  { to: '/retinher-transforma', label: 'Retinher Transforma', icon: Sparkles },
+  { to: '/ucad', label: 'UCAD (página)', icon: Eye },
   { to: '/sedes', label: 'Sedes', icon: MapPin },
+  { to: '/footer', label: 'Footer', icon: FileText },
 ]
 
 type SidebarProps = {

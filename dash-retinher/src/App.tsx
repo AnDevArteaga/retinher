@@ -6,6 +6,9 @@ import { LoginPage } from './pages/LoginPage'
 import { InicioPage } from './pages/InicioPage'
 import { NosotrosPage } from './pages/NosotrosPage'
 import { SedesPage } from './pages/SedesPage'
+import { RetinherTransformaPage } from './pages/RetinherTransformaPage'
+import { FooterPage } from './pages/FooterPage'
+import { UCADPage } from './pages/UCADPage'
 
 function App() {
   return (
@@ -24,6 +27,9 @@ function App() {
             <Route index element={<InicioPage />} />
             <Route path="nosotros" element={<NosotrosPage />} />
             <Route path="sedes" element={<SedesPage />} />
+            <Route path="retinher-transforma" element={<RetinherTransformaPage />} />
+            <Route path="ucad" element={<UCADPage />} />
+            <Route path="footer" element={<FooterPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
