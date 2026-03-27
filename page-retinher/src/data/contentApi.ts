@@ -62,7 +62,7 @@ async function fetchHome() {
       sellosImpacto: sellos ? { titulo: sellos.titulo, subtitulo: sellos.subtitulo, sellos: sellosItems.map((i) => ({ id: i.slug, titulo: i.titulo, logo: i.logo, descripcion: i.descripcion, porQue: i.por_que, queHicieron: i.que_hicieron ?? [], stats: i.stats ?? [], tags: i.tags ?? [], color: i.color })) } : null,
       sellosReconocimientos: sellosRecon ? { titulo: (sellosRecon as { titulo: string }).titulo, subtitulo: (sellosRecon as { subtitulo: string }).subtitulo, cta: (sellosRecon as { cta: string }).cta, sellos: sellosReconItems.map((i) => ({ id: i.slug, titulo: i.titulo, subtitulo: i.subtitulo, descripcion: i.descripcion, logros: i.logros, imagen: i.imagen, logoPlaceholder: i.logo_placeholder, color: i.color })) } : null,
       ucadSection: ucad ? { titulo: ucad.titulo, subtitulo: ucad.subtitulo, descripcion: ucad.descripcion, cta: ucad.cta, logo: ucad.logo, ruta: ucad.ruta } : null,
-      queRevisamos: queRevisamos ? { title: queRevisamos.title, text: queRevisamos.text, titleRight: (queRevisamos as { title_right?: string | null }).title_right ?? '', textRight: (queRevisamos as { text_right?: string | null }).text_right ?? '', ctaText: (queRevisamos as { cta_text?: string | null }).cta_text ?? null, ctaLinkType: ((queRevisamos as { cta_link_type?: string | null }).cta_link_type === 'page' ? 'page' : 'section') as 'page' | 'section' | null, ctaLinkValue: (queRevisamos as { cta_link_value?: string | null }).cta_link_value ?? null, ctaTextLeft: (queRevisamos as { cta_text_left?: string | null }).cta_text_left ?? null, ctaLinkTypeLeft: ((queRevisamos as { cta_link_type_left?: string | null }).cta_link_type_left === 'page' ? 'page' : 'section') as 'page' | 'section' | null, ctaLinkValueLeft: (queRevisamos as { cta_link_value_left?: string | null }).cta_link_value_left ?? null } : null,
+      queRevisamos: queRevisamos ? { title: queRevisamos.title, text: queRevisamos.text, titleRight: (queRevisamos as { title_right?: string | null }).title_right ?? '', textRight: (queRevisamos as { text_right?: string | null }).text_right ?? '', ctaText: (queRevisamos as { cta_text?: string | null }).cta_text ?? null, ctaLinkType: (queRevisamos as { cta_link_type?: string | null }).cta_link_type === 'section' ? 'section' : 'page', ctaLinkValue: (queRevisamos as { cta_link_value?: string | null }).cta_link_value ?? null, ctaTextLeft: (queRevisamos as { cta_text_left?: string | null }).cta_text_left ?? null, ctaLinkTypeLeft: (queRevisamos as { cta_link_type_left?: string | null }).cta_link_type_left === 'section' ? 'section' : 'page', ctaLinkValueLeft: (queRevisamos as { cta_link_value_left?: string | null }).cta_link_value_left ?? null } : null,
       gallery: gallery ? { title: gallery.title, subtitle: gallery.subtitle, items: galleryItems.map((i) => ({ id: i.id, type: i.type, src: i.src, caption: i.caption })) } : null,
       imageSection: imageSection ? { title: imageSection.title, subtitle: imageSection.subtitle, images: imageSectionItems.map((i) => ({ id: i.id, src: i.src, alt: i.alt })) } : null,
       visionLab: visionLab ? { title: visionLab.title, tagline: visionLab.tagline, calibration: visionLab.calibration, calibrationDesc: visionLab.calibration_desc, testInstruction: visionLab.test_instruction, feedback: visionLab.feedback ?? {}, directions: visionLab.directions ?? [] } : null,
@@ -198,7 +198,7 @@ async function fetchUcad() {
     supabase.from('whatsapp').select('*').maybeSingle(),
     supabase.from('nav_links').select('*').order('link_order'),
   ])
-  const page = pageR.data as { id: string; titulo_galeria: string; subtitulo_galeria: string } | null
+  const page = pageR.data as { id: string; titulo_galeria: string; subtitulo_galeria: string; infografia_url?: string; alcance_titulo?: string; alcance_texto?: string; poblacion_titulo?: string; poblacion_texto?: string } | null
   const items = (itemsR.data ?? []) as Array<{ id: string; src: string; alt: string; item_order: number }>
   const metas = (metasR.data ?? []) as Array<{ id: string; valor: string; label: string; descripcion: string; icon: string; color: string; item_order: number }>
   const footer = footerR.data
@@ -212,6 +212,11 @@ async function fetchUcad() {
         ? {
             tituloGaleria: page.titulo_galeria,
             subtituloGaleria: page.subtitulo_galeria,
+            infografiaUrl: page.infografia_url ?? '/infografia.jpeg',
+            alcanceTitulo: page.alcance_titulo ?? 'Zona de Influencia',
+            alcanceTexto: page.alcance_texto ?? 'Departamento de Córdoba (Sede principal en Montería + Unidad Móvil).',
+            poblacionTitulo: page.poblacion_titulo ?? 'Grupos Prioritarios',
+            poblacionTexto: page.poblacion_texto ?? 'Pacientes Diabéticos Tipo I y II\nGestantes con diabetes (Alto riesgo de progresión)\nPacientes sin tamizaje reciente (>1 año sin fondo de ojo)',
             galleryItems: items.map((i) => ({ id: i.id, src: i.src, alt: i.alt })),
             metas: metas.map((m) => ({ id: m.id, valor: m.valor, label: m.label, descripcion: m.descripcion, icon: m.icon, color: m.color })),
           }

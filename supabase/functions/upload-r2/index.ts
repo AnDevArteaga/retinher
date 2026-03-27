@@ -1,104 +1,128 @@
-// Edge Function: subir imagen a Cloudflare R2 (S3-compatible) y devolver URL pública.
-// Secrets en Supabase: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL
+// Subir imagen/vídeo a Cloudflare R2 y devolver URL pública.
+// Secrets en Supabase: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME (o R2_BUCKET), R2_PUBLIC_URL
 
-import { S3Client, PutObjectCommand } from "npm:@aws-sdk/client-s3@3.700.0";
+import { S3Client, PutObjectCommand } from 'npm:@aws-sdk/client-s3@3'
+import { corsHeaders } from '../_shared/cors.ts'
 
-const cors = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
+const R2_ACCOUNT_ID = Deno.env.get('R2_ACCOUNT_ID')
+const R2_ACCESS_KEY_ID = Deno.env.get('R2_ACCESS_KEY_ID')
+const R2_SECRET_ACCESS_KEY = Deno.env.get('R2_SECRET_ACCESS_KEY')
+const R2_BUCKET_NAME = Deno.env.get('R2_BUCKET_NAME') ?? Deno.env.get('R2_BUCKET')
+const R2_PUBLIC_URL = Deno.env.get('R2_PUBLIC_URL')?.replace(/\/$/, '') // URL pública del CDN de Cloudflare
 
-function getEnv(name: string): string {
-  const v = Deno.env.get(name);
-  if (!v) throw new Error(`Missing env: ${name}`);
-  return v;
-}
+const s3Client = new S3Client({
+  region: 'auto',
+  endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: R2_ACCESS_KEY_ID ?? '',
+    secretAccessKey: R2_SECRET_ACCESS_KEY ?? '',
+  },
+})
 
-Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: cors });
+const ALLOWED_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'video/mp4',
+  'video/webm',
+  'video/ogg',
+]
+const MAX_SIZE = 5 * 1024 * 1024 // 5MB
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
   }
 
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Método no permitido' }), {
       status: 405,
-      headers: { ...cors, "Content-Type": "application/json" },
-    });
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   }
 
   try {
-    const accountId = getEnv("R2_ACCOUNT_ID");
-    const accessKeyId = getEnv("R2_ACCESS_KEY_ID");
-    const secretAccessKey = getEnv("R2_SECRET_ACCESS_KEY");
-    const bucket = getEnv("R2_BUCKET");
-    const publicBaseUrl = getEnv("R2_PUBLIC_URL").replace(/\/$/, "");
-
-    const contentType = req.headers.get("Content-Type") || "";
-    let body: Uint8Array;
-    let key: string;
-    let type = "image/jpeg";
-
-    if (contentType.includes("multipart/form-data")) {
-      const form = await req.formData();
-      const file = form.get("file") as File | null;
-      const folder = (form.get("folder") as string) || "uploads";
-      if (!file) {
-        return new Response(JSON.stringify({ error: "Missing field: file" }), {
-          status: 400,
-          headers: { ...cors, "Content-Type": "application/json" },
-        });
-      }
-      type = file.type || "application/octet-stream";
-      const ext = file.name.split(".").pop() || "bin";
-      key = `${folder}/${crypto.randomUUID()}.${ext}`;
-      body = new Uint8Array(await file.arrayBuffer());
-    } else if (contentType.includes("application/json")) {
-      const json = (await req.json()) as { data?: string; key?: string; folder?: string };
-      const b64 = json.data;
-      const folder = json.folder || "uploads";
-      if (!b64) {
-        return new Response(JSON.stringify({ error: "Missing field: data (base64)" }), {
-          status: 400,
-          headers: { ...cors, "Content-Type": "application/json" },
-        });
-      }
-      key = json.key || `${folder}/${crypto.randomUUID()}.jpg`;
-      body = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
-      if (json.type) type = json.type;
-    } else {
-      return new Response(
-        JSON.stringify({ error: "Use multipart/form-data (file) or application/json (data base64)" }),
-        { status: 400, headers: { ...cors, "Content-Type": "application/json" } }
-      );
+    if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY || !R2_BUCKET_NAME || !R2_PUBLIC_URL) {
+      console.error('Variables de entorno de R2 no configuradas')
+      return new Response(JSON.stringify({ error: 'Configuración de R2 incompleta' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
 
-    const endpoint = `https://${accountId}.r2.cloudflarestorage.com`;
-    const client = new S3Client({
-      region: "auto",
-      endpoint,
-      credentials: { accessKeyId, secretAccessKey },
-    });
+    const formData = await req.formData()
+    const file = formData.get('file') as File | null
 
-    await client.send(
-      new PutObjectCommand({
-        Bucket: bucket,
-        Key: key,
-        Body: body,
-        ContentType: type,
+    if (!file) {
+      return new Response(JSON.stringify({ error: 'No se proporcionó ningún archivo' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
-    );
+    }
 
-    const url = `${publicBaseUrl}/${key}`;
-    return new Response(JSON.stringify({ url, key }), {
-      status: 200,
-      headers: { ...cors, "Content-Type": "application/json" },
-    });
-  } catch (e) {
-    const message = e instanceof Error ? e.message : "Upload failed";
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...cors, "Content-Type": "application/json" },
-    });
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return new Response(
+        JSON.stringify({
+          error: 'Tipo de archivo no permitido. Solo se permiten imágenes (JPEG, PNG, WebP, GIF) y vídeos (MP4, WebM, OGG).',
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    if (file.size > MAX_SIZE) {
+      return new Response(JSON.stringify({ error: 'El archivo es demasiado grande. Máximo 5MB' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const folder = (formData.get('folder') as string) || 'uploads'
+    const timestamp = Date.now()
+    const randomString = Math.random().toString(36).substring(2, 15)
+    const fileExtension = file.name.split('.').pop() || 'jpg'
+    const fileName = `${folder}/${timestamp}-${randomString}.${fileExtension}`
+
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = new Uint8Array(arrayBuffer)
+
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: R2_BUCKET_NAME,
+        Key: fileName,
+        Body: buffer,
+        ContentType: file.type,
+      })
+    )
+
+    const publicUrl = `${R2_PUBLIC_URL}/${fileName}`
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        url: publicUrl,
+        fileName,
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  } catch (error) {
+    console.error('Error al subir imagen:', error)
+    return new Response(
+      JSON.stringify({
+        error: 'Error al subir la imagen',
+        message: error instanceof Error ? error.message : 'Error desconocido',
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
   }
-});
+})

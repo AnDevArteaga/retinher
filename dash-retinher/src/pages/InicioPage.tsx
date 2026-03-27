@@ -857,13 +857,27 @@ export function InicioPage() {
                     ))}
                   </select>
                 ) : (
-                  <input
-                    type="text"
-                    placeholder="id sección"
-                    value={queRevisamos.cta_link_value_left ?? ''}
-                    onChange={(e) => setQueRevisamos({ ...queRevisamos, cta_link_value_left: e.target.value || null })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                  />
+                  <div>
+                    <select
+                      value={CTA_SECTION_OPTIONS.some((o) => o.value === (queRevisamos.cta_link_value_left || 'vision-lab')) ? (queRevisamos.cta_link_value_left || 'vision-lab') : '__otro__'}
+                      onChange={(e) => setQueRevisamos({ ...queRevisamos, cta_link_value_left: e.target.value === '__otro__' ? '' : e.target.value })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                    >
+                      {CTA_SECTION_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                      <option value="__otro__">Otro</option>
+                    </select>
+                    {(!queRevisamos.cta_link_value_left || CTA_SECTION_OPTIONS.every((o) => o.value !== queRevisamos.cta_link_value_left)) && (
+                      <input
+                        type="text"
+                        placeholder="Ej: vision-lab"
+                        value={queRevisamos.cta_link_value_left ?? ''}
+                        onChange={(e) => setQueRevisamos({ ...queRevisamos, cta_link_value_left: e.target.value || null })}
+                        className="mt-2 w-full px-3 py-2 border border-slate-300 rounded-lg"
+                      />
+                    )}
+                  </div>
                 )}
               </>
             )}
@@ -902,13 +916,27 @@ export function InicioPage() {
                     ))}
                   </select>
                 ) : (
-                  <input
-                    type="text"
-                    placeholder="id sección"
-                    value={queRevisamos.cta_link_value ?? ''}
-                    onChange={(e) => setQueRevisamos({ ...queRevisamos, cta_link_value: e.target.value || null })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                  />
+                  <div>
+                    <select
+                      value={CTA_SECTION_OPTIONS.some((o) => o.value === (queRevisamos.cta_link_value || 'vision-lab')) ? (queRevisamos.cta_link_value || 'vision-lab') : '__otro__'}
+                      onChange={(e) => setQueRevisamos({ ...queRevisamos, cta_link_value: e.target.value === '__otro__' ? '' : e.target.value })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                    >
+                      {CTA_SECTION_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                      <option value="__otro__">Otro</option>
+                    </select>
+                    {(!queRevisamos.cta_link_value || CTA_SECTION_OPTIONS.every((o) => o.value !== queRevisamos.cta_link_value)) && (
+                      <input
+                        type="text"
+                        placeholder="Ej: vision-lab"
+                        value={queRevisamos.cta_link_value ?? ''}
+                        onChange={(e) => setQueRevisamos({ ...queRevisamos, cta_link_value: e.target.value || null })}
+                        className="mt-2 w-full px-3 py-2 border border-slate-300 rounded-lg"
+                      />
+                    )}
+                  </div>
                 )}
               </>
             )}
@@ -1168,17 +1196,32 @@ export function InicioPage() {
                             <option value="image">Imagen</option>
                             <option value="video">Vídeo</option>
                           </select>
-                          <input
-                            type="url"
-                            value={m.url}
-                            onChange={(e) => {
-                              const next = [...(item.media || [])]
-                              next[idx] = { ...next[idx], url: e.target.value }
-                              updateNews(item.id, { media: next })
-                            }}
-                            placeholder="https://..."
-                            className="flex-1 min-w-[200px] px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                          />
+                          {m.type === 'video' ? (
+                            <input
+                              type="url"
+                              value={m.url}
+                              onChange={(e) => {
+                                const next = [...(item.media || [])]
+                                next[idx] = { ...next[idx], url: e.target.value }
+                                updateNews(item.id, { media: next })
+                              }}
+                              placeholder="https://..."
+                              className="flex-1 min-w-[200px] px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                            />
+                          ) : (
+                            <div className="flex-1 min-w-[200px]">
+                              <ImageField
+                                label=""
+                                value={m.url}
+                                onChange={(v) => {
+                                  const next = [...(item.media || [])]
+                                  next[idx] = { ...next[idx], url: v }
+                                  updateNews(item.id, { media: next })
+                                }}
+                                folder="news"
+                              />
+                            </div>
+                          )}
                           <button
                             type="button"
                             onClick={() => updateNews(item.id, { media: (item.media || []).filter((_, i) => i !== idx) })}

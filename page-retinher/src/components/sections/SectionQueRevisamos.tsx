@@ -120,7 +120,10 @@ export function SectionQueRevisamos() {
   } = queRevisamos
 
   const getCtaHref = (linkType: 'page' | 'section' | null | undefined, linkValue: string | null | undefined): string | null => {
-    if (!linkType || !linkValue) return null
+    if (!linkType || linkValue == null) return null
+    if (linkType === 'page' && linkValue === '') return '/'
+    if (linkType === 'section' && linkValue === '') return null
+
     return linkType === 'page'
       ? linkValue.startsWith('/')
         ? linkValue
@@ -129,6 +132,14 @@ export function SectionQueRevisamos() {
   }
   const ctaHrefRight = ctaText ? getCtaHref(ctaLinkType ?? 'page', ctaLinkValue ?? '/retinher-transforma') : null
   const ctaHrefLeft = ctaTextLeft ? getCtaHref(ctaLinkTypeLeft ?? 'page', ctaLinkValueLeft ?? '/') : null
+
+  const handleCtaClick = (e: React.MouseEvent<HTMLAnchorElement>, linkType: 'page' | 'section' | null | undefined, linkValue: string | null | undefined) => {
+    if (linkType === 'section' && linkValue) {
+      e.preventDefault()
+      const id = linkValue.replace(/^#/, '')
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   return (
     <section ref={sectionRef} className="relative bg-white overflow-hidden">
@@ -156,6 +167,7 @@ export function SectionQueRevisamos() {
             <div className="mt-10 pointer-events-auto">
               <a
                 href={ctaHrefLeft}
+                onClick={(e) => handleCtaClick(e, ctaLinkTypeLeft, ctaLinkValueLeft)}
                 className="inline-block px-8 py-4 rounded-xl font-bold text-white bg-[var(--color-btn)] hover:opacity-90 transition-opacity"
               >
                 {ctaTextLeft}
@@ -202,6 +214,7 @@ export function SectionQueRevisamos() {
             <div className="mt-10 pointer-events-auto">
               <a
                 href={ctaHrefRight}
+                onClick={(e) => handleCtaClick(e, ctaLinkType, ctaLinkValue)}
                 className="inline-block px-8 py-4 rounded-xl font-bold text-white bg-[var(--color-btn)] hover:opacity-90 transition-opacity"
               >
                 {ctaText}

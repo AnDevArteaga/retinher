@@ -41,7 +41,7 @@ const FALLBACK_GALLERY = [
 
 export function UCADPage() {
   const { data } = useContent()
-  const ucadPage = (data as { ucadPage?: { tituloGaleria: string; subtituloGaleria: string; galleryItems: Array<{ id: string; src: string; alt: string }>; metas: Array<{ id: string; valor: string; label: string; descripcion: string; icon: string; color: string }> } })?.ucadPage
+  const ucadPage = (data as { ucadPage?: { tituloGaleria: string; subtituloGaleria: string; infografiaUrl: string; alcanceTitulo: string; alcanceTexto: string; poblacionTitulo: string; poblacionTexto: string; galleryItems: Array<{ id: string; src: string; alt: string }>; metas: Array<{ id: string; valor: string; label: string; descripcion: string; icon: string; color: string }> } })?.ucadPage
 
   const galleryTitle = ucadPage?.tituloGaleria ?? 'En imágenes'
   const gallerySubtitle = ucadPage?.subtituloGaleria ?? 'UCAD Te Veo y Te Ves en acción'
@@ -643,7 +643,7 @@ export function UCADPage() {
             style={{ borderColor: UCAD_COLORS.azulUCAD }}
           >
             <img
-              src="/infografia.jpeg"
+              src={ucadPage?.infografiaUrl ?? "/infografia.jpeg"}
               alt="Infografía UCAD Te Veo y Te Ves"
               className="h-auto w-full object-contain"
             />
@@ -977,12 +977,11 @@ export function UCADPage() {
                   className="text-xl font-bold"
                   style={{ color: UCAD_COLORS.azulProfundo }}
                 >
-                  Zona de Influencia
+                  {ucadPage?.alcanceTitulo ?? 'Zona de Influencia'}
                 </h3>
               </div>
-              <p className="text-slate-600 text-justify">
-                Departamento de Córdoba (Sede principal en Montería + Unidad
-                Móvil).
+              <p className="text-slate-600 text-justify whitespace-pre-line">
+                {ucadPage?.alcanceTexto ?? 'Departamento de Córdoba (Sede principal en Montería + Unidad Móvil).'}
               </p>
             </div>
 
@@ -1003,31 +1002,19 @@ export function UCADPage() {
                   className="text-xl font-bold"
                   style={{ color: UCAD_COLORS.azulProfundo }}
                 >
-                  Grupos Prioritarios
+                  {ucadPage?.poblacionTitulo ?? 'Grupos Prioritarios'}
                 </h3>
               </div>
               <ul className="space-y-3 text-slate-600 text-justify">
-                <li className="flex items-center gap-2">
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: UCAD_COLORS.verdeReti }}
-                  />
-                  Pacientes Diabéticos Tipo I y II
-                </li>
-                <li className="flex items-center gap-2">
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: UCAD_COLORS.verdeReti }}
-                  />
-                  Gestantes con diabetes (Alto riesgo de progresión)
-                </li>
-                <li className="flex items-center gap-2">
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: UCAD_COLORS.verdeReti }}
-                  />
-                  Pacientes sin tamizaje reciente (&gt;1 año sin fondo de ojo)
-                </li>
+                {(ucadPage?.poblacionTexto ?? 'Pacientes Diabéticos Tipo I y II\nGestantes con diabetes (Alto riesgo de progresión)\nPacientes sin tamizaje reciente (>1 año sin fondo de ojo)').split('\n').filter((l) => l.trim()).map((line, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span
+                      className="h-2 w-2 rounded-full mt-2 shrink-0"
+                      style={{ backgroundColor: UCAD_COLORS.verdeReti }}
+                    />
+                    <span>{line}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

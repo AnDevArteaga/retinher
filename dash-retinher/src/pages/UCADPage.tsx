@@ -49,7 +49,7 @@ const ICON_OPTIONS = ['Users', 'TrendingUp', 'Activity', 'Zap', 'Award', 'Heart'
 const COLOR_OPTIONS = ['verdeReti', 'azulUCAD', 'rojoAlerta']
 
 export function UCADPage() {
-  const [ucadPage, setUcadPage] = useState<{ id: string; titulo_galeria: string; subtitulo_galeria: string } | null>(null)
+  const [ucadPage, setUcadPage] = useState<{ id: string; titulo_galeria: string; subtitulo_galeria: string; infografia_url?: string; alcance_titulo?: string; alcance_texto?: string; poblacion_titulo?: string; poblacion_texto?: string } | null>(null)
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([])
   const [metas, setMetas] = useState<MetaItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -90,6 +90,25 @@ export function UCADPage() {
     setSaving(null)
     if (error) setMsgErr(error.message)
     else setMsgOk('Títulos guardados')
+  }
+
+  const saveContenido = async () => {
+    if (!ucadPage) return
+    setSaving('ucad_contenido')
+    setMsg('')
+    const { error } = await supabase
+      .from('ucad_page')
+      .update({ 
+        infografia_url: ucadPage.infografia_url,
+        alcance_titulo: ucadPage.alcance_titulo,
+        alcance_texto: ucadPage.alcance_texto,
+        poblacion_titulo: ucadPage.poblacion_titulo,
+        poblacion_texto: ucadPage.poblacion_texto
+      })
+      .eq('id', ucadPage.id)
+    setSaving(null)
+    if (error) setMsgErr(error.message)
+    else setMsgOk('Contenido guardado')
   }
 
   const addGalleryItem = () => {
@@ -259,6 +278,32 @@ export function UCADPage() {
   if (loading) return <div className="flex items-center justify-center py-24 text-slate-500">Cargando…</div>
 
   const tabs = [
+    {
+      id: 'contenido',
+      label: 'Infografía y Alcance',
+      content: ucadPage ? (
+        <SectionCard title="Infografía y Alcance">
+          <form onSubmit={(e) => { e.preventDefault(); saveContenido(); }} className="space-y-4">
+            <h3 className="font-semibold border-b border-slate-200 pb-2">Infografía</h3>
+            <ImageField label="Imagen Infografía (URL o subir)" value={ucadPage.infografia_url || ''} onChange={(v) => setUcadPage({ ...ucadPage, infografia_url: v })} folder="ucad" />
+            
+            <h3 className="font-semibold border-b border-slate-200 pb-2 mt-6">Alcance (Zona de Influencia)</h3>
+            <Input label="Título" value={ucadPage.alcance_titulo || ''} onChange={(v) => setUcadPage({ ...ucadPage, alcance_titulo: v })} />
+            <Textarea label="Texto" value={ucadPage.alcance_texto || ''} onChange={(v) => setUcadPage({ ...ucadPage, alcance_texto: v })} rows={3} />
+
+            <h3 className="font-semibold border-b border-slate-200 pb-2 mt-6">Población Objetivo (Grupos Prioritarios)</h3>
+            <Input label="Título" value={ucadPage.poblacion_titulo || ''} onChange={(v) => setUcadPage({ ...ucadPage, poblacion_titulo: v })} />
+            <Textarea label="Texto (un ítem por línea)" value={ucadPage.poblacion_texto || ''} onChange={(v) => setUcadPage({ ...ucadPage, poblacion_texto: v })} rows={5} />
+
+            <button type="submit" disabled={!!saving} className="px-4 py-2 mt-4 bg-[var(--color-btn)] text-[var(--color-btn-text)] rounded-lg hover:bg-[var(--color-btn-hover)] disabled:opacity-50">
+              {saving === 'ucad_contenido' ? 'Guardando...' : 'Guardar contenido'}
+            </button>
+          </form>
+        </SectionCard>
+      ) : (
+        <p className="text-slate-500 py-4">Sin datos.</p>
+      ),
+    },
     {
       id: 'galeria',
       label: 'Galería (En imágenes)',
