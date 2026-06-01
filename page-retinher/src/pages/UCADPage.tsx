@@ -47,13 +47,13 @@ export function UCADPage() {
   const gallerySubtitle = ucadPage?.subtituloGaleria ?? 'UCAD Te Veo y Te Ves en acción'
   const UCAD_IMAGES = (ucadPage?.galleryItems?.length ? ucadPage.galleryItems : FALLBACK_GALLERY) as Array<{ id: string; src: string; alt: string }>
   const METAS_DATA = ucadPage?.metas?.length
-    ? ucadPage.metas.map((m) => ({ ...m, icon: ICON_MAP[m.icon as keyof typeof ICON_MAP] ?? Activity, color: COLOR_MAP[m.color] ?? UCAD_COLORS.verdeReti }))
+    ? ucadPage.metas.map((m) => ({ ...m, desc: m.descripcion, icon: ICON_MAP[m.icon as keyof typeof ICON_MAP] ?? Activity, color: COLOR_MAP[m.color] ?? UCAD_COLORS.verdeReti }))
     : [
-        { valor: '80%', label: 'Cobertura', desc: 'Tamizaje anual en población de riesgo identificada', icon: Users, color: UCAD_COLORS.verdeReti },
-        { valor: '90%', label: 'Seguimiento', desc: 'Efectividad en la Red de Referencia Digital', icon: TrendingUp, color: UCAD_COLORS.verdeReti },
-        { valor: '80%', label: 'Estabilización', desc: 'Clínica de retinopatía a los 12 meses de manejo', icon: Activity, color: UCAD_COLORS.verdeReti },
-        { valor: '< 7 Días', label: 'Oportunidad', desc: 'Meta para remisiones de alta prioridad', icon: Zap, color: UCAD_COLORS.azulUCAD },
-        { valor: '-10%', label: 'Eficiencia', desc: 'Reducción anual en costo operativo por paciente tamizado mediante innovación', icon: TrendingUp, color: UCAD_COLORS.verdeReti },
+        { id: 'm1', valor: '80%', label: 'Cobertura', desc: 'Tamizaje anual en población de riesgo identificada', descripcion: 'Tamizaje anual en población de riesgo identificada', icon: Users, color: UCAD_COLORS.verdeReti },
+        { id: 'm2', valor: '90%', label: 'Seguimiento', desc: 'Efectividad en la Red de Referencia Digital', descripcion: 'Efectividad en la Red de Referencia Digital', icon: TrendingUp, color: UCAD_COLORS.verdeReti },
+        { id: 'm3', valor: '80%', label: 'Estabilización', desc: 'Clínica de retinopatía a los 12 meses de manejo', descripcion: 'Clínica de retinopatía a los 12 meses de manejo', icon: Activity, color: UCAD_COLORS.verdeReti },
+        { id: 'm4', valor: '< 7 Días', label: 'Oportunidad', desc: 'Meta para remisiones de alta prioridad', descripcion: 'Meta para remisiones de alta prioridad', icon: Zap, color: UCAD_COLORS.azulUCAD },
+        { id: 'm5', valor: '-10%', label: 'Eficiencia', desc: 'Reducción anual en costo operativo por paciente tamizado mediante innovación', descripcion: 'Reducción anual en costo operativo por paciente tamizado mediante innovación', icon: TrendingUp, color: UCAD_COLORS.verdeReti },
       ]
 
   const heroRef = useRef<HTMLElement>(null)
