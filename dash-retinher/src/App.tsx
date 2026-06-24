@@ -7,8 +7,9 @@ import { InicioPage } from './pages/InicioPage'
 import { NosotrosPage } from './pages/NosotrosPage'
 import { SedesPage } from './pages/SedesPage'
 import { RetinherTransformaPage } from './pages/RetinherTransformaPage'
-import { FooterPage } from './pages/FooterPage'
+import { InformesPage } from './pages/InformesPage'
 import { UCADPage } from './pages/UCADPage'
+import { FooterPage } from './pages/FooterPage'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="sedes" element={<SedesPage />} />
             <Route path="retinher-transforma" element={<RetinherTransformaPage />} />
             <Route path="ucad" element={<UCADPage />} />
+            <Route path="informes" element={<InformesPage />} />
             <Route path="footer" element={<FooterPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

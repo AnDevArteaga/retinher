@@ -28,8 +28,12 @@ const ALLOWED_TYPES = [
   'video/mp4',
   'video/webm',
   'video/ogg',
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/msword',
 ]
-const MAX_SIZE = 5 * 1024 * 1024 // 5MB
+const MAX_IMAGE_VIDEO_SIZE = 5 * 1024 * 1024 // 5MB
+const MAX_DOCUMENT_SIZE = 20 * 1024 * 1024 // 20MB
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -65,7 +69,7 @@ Deno.serve(async (req) => {
     if (!ALLOWED_TYPES.includes(file.type)) {
       return new Response(
         JSON.stringify({
-          error: 'Tipo de archivo no permitido. Solo se permiten imágenes (JPEG, PNG, WebP, GIF) y vídeos (MP4, WebM, OGG).',
+          error: 'Tipo de archivo no permitido. Se permiten imágenes, vídeos, PDF y documentos Word (DOC/DOCX).',
         }),
         {
           status: 400,
@@ -74,11 +78,19 @@ Deno.serve(async (req) => {
       )
     }
 
-    if (file.size > MAX_SIZE) {
-      return new Response(JSON.stringify({ error: 'El archivo es demasiado grande. Máximo 5MB' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+    const isDocument =
+      file.type === 'application/pdf' ||
+      file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      file.type === 'application/msword'
+    const maxSize = isDocument ? MAX_DOCUMENT_SIZE : MAX_IMAGE_VIDEO_SIZE
+    if (file.size > maxSize) {
+      return new Response(
+        JSON.stringify({ error: isDocument ? 'El documento es demasiado grande. Máximo 20MB' : 'El archivo es demasiado grande. Máximo 5MB' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
     }
 
     const folder = (formData.get('folder') as string) || 'uploads'

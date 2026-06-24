@@ -228,7 +228,67 @@ async function fetchUcad() {
   }
 }
 
-export type PageSlug = 'home' | 'nosotros' | 'sedes' | 'retinher_transforma' | 'ucad'
+async function fetchInformes() {
+  const [v, pageR, itemsR, footerR, whatsappR, navR] = await Promise.all([
+    getVersion('informes'),
+    supabase.from('informes_page').select('*').maybeSingle(),
+    supabase.from('informes_items').select('*').order('item_order'),
+    supabase.from('footer').select('*').maybeSingle(),
+    supabase.from('whatsapp').select('*').maybeSingle(),
+    supabase.from('nav_links').select('*').order('link_order'),
+  ])
+  const page = pageR.data as { titulo: string; subtitulo: string } | null
+  const items = (itemsR.data ?? []) as Array<{
+    id: string
+    titulo: string
+    descripcion: string
+    archivo_url: string
+    archivo_nombre: string
+    archivo_tipo: 'pdf' | 'docx'
+    fecha: string | null
+  }>
+  const footer = footerR.data
+  const whatsapp = whatsappR.data
+  const navLinks = (navR.data ?? []) as Array<{ href: string; label: string }>
+
+  return {
+    version: v ?? '',
+    data: {
+      informes: page
+        ? {
+            titulo: page.titulo,
+            subtitulo: page.subtitulo,
+            items: items
+              .filter((i) => i.archivo_url)
+              .map((i) => ({
+                id: i.id,
+                titulo: i.titulo,
+                descripcion: i.descripcion,
+                archivoUrl: i.archivo_url,
+                archivoNombre: i.archivo_nombre,
+                archivoTipo: i.archivo_tipo,
+                fecha: i.fecha,
+              })),
+          }
+        : null,
+      footer: footer
+        ? {
+            sede1: (footer as { sede1: string }).sede1,
+            sede2: (footer as { sede2: string }).sede2,
+            pbx: (footer as { pbx: string }).pbx,
+            email: (footer as { email: string }).email,
+            city: (footer as { city: string }).city,
+            copyright: (footer as { copyright: string }).copyright,
+            privacy: (footer as { privacy: string }).privacy,
+          }
+        : null,
+      whatsapp: whatsapp ? { numero: (whatsapp as { numero: string }).numero, mensaje: (whatsapp as { mensaje: string }).mensaje } : null,
+      nav: { logo: 'RETINHER', links: navLinks.map((l) => ({ href: l.href, label: l.label })) },
+    },
+  }
+}
+
+export type PageSlug = 'home' | 'nosotros' | 'sedes' | 'retinher_transforma' | 'ucad' | 'informes'
 
 export async function getPageContent(slug: PageSlug): Promise<unknown> {
   const version = await getVersion(slug)
@@ -241,6 +301,7 @@ export async function getPageContent(slug: PageSlug): Promise<unknown> {
   else if (slug === 'sedes') result = await fetchSedes()
   else if (slug === 'retinher_transforma') result = await fetchRetinherTransforma()
   else if (slug === 'ucad') result = await fetchUcad()
+  else if (slug === 'informes') result = await fetchInformes()
   else return null
 
   cache.set(slug, { version: result.version, data: result.data })

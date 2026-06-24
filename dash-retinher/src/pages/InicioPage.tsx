@@ -55,6 +55,7 @@ const CTA_PAGE_OPTIONS: { value: string; label: string }[] = [
   { value: '/ucad-te-veo-te-ves', label: 'UCAD Te Veo y Te Ves' },
   { value: '/retinher-transforma', label: 'Retinher Transforma' },
   { value: '/sedes', label: 'Sedes' },
+  { value: '/informes', label: 'Informes' },
   { value: '/contacto', label: 'Contacto' },
 ]
 

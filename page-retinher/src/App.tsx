@@ -9,6 +9,7 @@ import { NosotrosPage } from './pages/NosotrosPage'
 import { UCADPage } from './pages/UCADPage'
 import { SedesPage } from './pages/SedesPage'
 import { RetinherTransformaPage } from './pages/RetinherTransformaPage'
+import { InformesPage } from './pages/InformesPage'
 import { ContentProvider, useContent } from './contexts/ContentContext'
 import { PageSEO } from './components/shared/PageSEO'
 import type { PageSlug } from './data/contentApi'
@@ -19,6 +20,7 @@ function slugFromPathname(pathname: string): PageSlug {
   if (pathname === '/nosotros') return 'nosotros'
   if (pathname === '/sedes') return 'sedes'
   if (pathname === '/retinher-transforma') return 'retinher_transforma'
+  if (pathname === '/informes') return 'informes'
   return 'home'
 }
 
@@ -39,6 +41,7 @@ function AppContent() {
           <Route path="/ucad-te-veo-te-ves" element={<UCADPage />} />
           <Route path="/sedes" element={<SedesPage />} />
           <Route path="/retinher-transforma" element={<RetinherTransformaPage />} />
+          <Route path="/informes" element={<InformesPage />} />
         </Routes>
       </main>
       <Footer />

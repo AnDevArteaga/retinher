@@ -28,7 +28,7 @@ export function NavBar() {
       }`}
       aria-label="Navegación principal"
     >
-      <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:pl-6 sm:pr-6 lg:px-8">
+      <div className="relative mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:pl-6 sm:pr-6 lg:px-8">
         <Link
           to="/"
           className="flex shrink-0 items-center transition-opacity hover:opacity-90 md:w-auto"

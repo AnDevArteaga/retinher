@@ -30,6 +30,11 @@ export const SEO_BY_PATH: Record<string, { title: string; description: string }>
     description:
       'Retinher Transforma: programas y servicios para el cuidado y la mejora de tu visión.',
   },
+  '/informes': {
+    title: `Informes | ${SITE_NAME}`,
+    description:
+      'Consulta y descarga los informes institucionales y documentos de gestión de Retinher.',
+  },
 }
 
 /** Obtiene la config SEO para una ruta; si no existe, usa la de inicio */
